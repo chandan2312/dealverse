@@ -98,21 +98,26 @@ export const editComment = asyncHandler(async (req, res, next) => {
 	}
 
 	try {
-		const editComment = await Comment.findByIdAndUpdate(id, {
-			$set: {
-				body,
-				deal,
+		const editComment = await Comment.findByIdAndUpdate(
+			id,
+			{
+				$set: {
+					body,
+					deal,
+				},
 			},
-            {
-                new: true
-            },
-		});
+			{
+				new: true,
+			}
+		);
 
-        if (!editComment) {
-            throw new ApiError(400, `Comment not edited`);
-        }
+		if (!editComment) {
+			throw new ApiError(400, `Comment not edited`);
+		}
 
-        res.status(201).json(new ApiResponse(200, editComment, "Comment edited successfully"));
+		res
+			.status(201)
+			.json(new ApiResponse(200, editComment, "Comment edited successfully"));
 	} catch (error) {
 		console.log(error.message);
 		res
@@ -123,16 +128,16 @@ export const editComment = asyncHandler(async (req, res, next) => {
 
 //---------------------------deleteComment ---------------------------//
 export const deleteComment = asyncHandler(async (req, res, next) => {
-
-const { idsToDelete } = await req.body;
+	const { idsToDelete } = await req.body;
 
 	if (!idsToDelete.length) {
 		throw new ApiError(400, `Please select at least one comment to delete`);
 	}
 
 	try {
-
-		const deletedComments = await Comment.deleteMany({ _id: { $in: idsToDelete } });
+		const deletedComments = await Comment.deleteMany({
+			_id: { $in: idsToDelete },
+		});
 
 		if (!deletedComments.n) {
 			throw new ApiError(400, "Comment is not found");
@@ -153,17 +158,15 @@ const { idsToDelete } = await req.body;
 			message: error.message || "Something went wrong while deleting Offer",
 		});
 	}
-
 });
 
 //--------------------------- getComment ---------------------------//
 export const getComment = asyncHandler(async (req, res, next) => {
+	const { id } = await req.query;
 
-    const { id } = await req.query;
-
-    if(!id) {
-        throw new ApiError(400, `Please select Comment to get`);
-    }
+	if (!id) {
+		throw new ApiError(400, `Please select Comment to get`);
+	}
 
 	try {
 		const comment = await Comment.aggregate(
@@ -190,7 +193,7 @@ export const getComment = asyncHandler(async (req, res, next) => {
 						],
 						as: "user",
 					},
-				}
+				},
 			].filter(Boolean)
 		);
 
@@ -198,26 +201,23 @@ export const getComment = asyncHandler(async (req, res, next) => {
 			throw new ApiError(400, "Comment not found");
 		}
 
-		return res.status(200).json(new ApiResponse(200, comment, "Store is Fetched"));
+		return res
+			.status(200)
+			.json(new ApiResponse(200, comment, "Store is Fetched"));
 	} catch (error) {
 		console.log(error.message);
 		return res.status(400).json(new ApiResponse(400, null, error.message));
 	}
-
-
 });
 
 //--------------------------- getCommentList ---------------------------//
 export const getCommentList = asyncHandler(async (req, res, next) => {
-
-const {
+	const {
 		page = 1,
 		limit = 10,
 		sortBy = "createdAt", //mostReplies
 		searchTerm = "",
-
 	} = await req.body;
-
 
 	const pipeline = [
 		// STAGE 1 - Match Stage
@@ -228,15 +228,14 @@ const {
 				}),
 				// if there is searchTerm, then it won't filter on date
 				...(searchTerm && {
-					$or: [
-						{ body: { $regex: searchTerm, $options: "i" } }	],
+					$or: [{ body: { $regex: searchTerm, $options: "i" } }],
 				}),
 			},
 		},
 
 		// STAGE 5 - Lookup  (if include...Data variable is true)
 
-{
+		{
 			$lookup: {
 				from: "comments",
 				localField: "replies",
@@ -245,7 +244,7 @@ const {
 			},
 		},
 
-	{
+		{
 			$lookup: {
 				from: "users",
 				localField: "user",
@@ -268,7 +267,7 @@ const {
 
 	const comments = await Comment.aggregate(pipeline.filter(Boolean));
 
-	return res.status(200).json(new ApiResponse(200, comments, "Comments List is Fetched"));
-
-
+	return res
+		.status(200)
+		.json(new ApiResponse(200, comments, "Comments List is Fetched"));
 });

@@ -266,15 +266,6 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(200, user, "User fetched successfully"));
 });
 
-//---------------------------- getUser --------------------------//
-
-const getCurrentUser = asyncHandler(async (req, res) => {
-	const user = req.user;
-	return res
-		.status(200)
-		.json(new ApiResponse(200, user, "User fetched successfully"));
-});
-
 //---------------------------- updateProfileDetails --------------------------//
 
 const updateProfileDetails = asyncHandler(async (req, res) => {

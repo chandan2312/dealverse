@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
 	addStore,
 	editStore,
-	deleteStore,
+	deleteStores,
 	getStore,
 	getStoreList,
 } from "../controllers/store.controller.js";
@@ -24,6 +24,6 @@ router
 		addStore
 	);
 router.route("/edit-store").post(verifyJWT, editStore);
-router.route("/delete-store").post(verifyJWT, deleteStore);
+router.route("/delete-stores").post(verifyJWT, deleteStores);
 
 export default router;

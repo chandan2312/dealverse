@@ -1,20 +1,38 @@
-/** @type {import('next').NextConfig} */
-
-import server from "@repo/backend";
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
+// With this line
+const serverPromise = import("@repo/backend");
 
 dotenv.config({
 	path: "./app/.env",
 });
 
-const result = server(
-	process.env.BACKEND_PORT,
-	process.env.DB_SERVER_URL,
-	process.env.DB_NAME
-);
+serverPromise.then(({ default: server }) => {
+	const result = server(
+		process.env.BACKEND_PORT,
+		process.env.DB_SERVER_URL,
+		process.env.DB_NAME
+	);
+});
 
 const config = {
 	transpilePackages: ["@repo/ui", "@repo/backend"],
+
+	reactStrictMode: true,
+
+	images: {
+		domains: [
+			"localhost",
+			"avatars.githubusercontent.com",
+			"cloudflare-ipfs.com",
+		],
+	},
+
+	remotePatterns: [
+		{
+			protocol: "https",
+			hostname: "**",
+		},
+	],
 };
 
-export default config;
+module.exports = config;
