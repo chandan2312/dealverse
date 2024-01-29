@@ -20,7 +20,10 @@ import { Input } from "./ui/input";
 
 import { faker } from "@faker-js/faker";
 
-const DealListingCard = ({
+import { keywords } from "../constants/keywords";
+
+const DealListingCardNarrow = ({
+	lang,
 	className,
 	title,
 	description,
@@ -31,7 +34,7 @@ const DealListingCard = ({
 		<Card className={`${className} relative rounded-md   mx-1 my-[6px]`}>
 			<div className="ribbon-wrapper-green">
 				<div className="ribbon-green">
-					<span className=" ribbon-text">25% Off</span>
+					<span className=" ribbon-text">25% {keywords.off[lang]}</span>
 				</div>
 			</div>
 			<CardContent className="flex items-center bg-secondary gap-2">
@@ -65,7 +68,7 @@ const DealListingCard = ({
 										className="w-4 h-4 rounded-full"
 									/>
 								</span>
-								<span className="text-slate-400 ">{props.storeName}</span>
+								<span className="text-slate-400 text-xs ">{props.storeName}</span>
 							</a>
 
 							<Separator orientation="vertical" />
@@ -86,38 +89,41 @@ const DealListingCard = ({
 					{/* ------------------- Pricing ---------------- */}
 
 					<Card className="flex bg-transparent shadow-none items-center gap-2 text-xs">
-						<div>
-							<span className="font-semibold text-green-500 pl-1 ">
-								{props.currency}
+						<div className="flex gap-1 items-center">
+							<span className=" text-green-500 pl-1 ">{keywords.currency[lang]}</span>
+							<span className=" text-green-500 font-semibold">
+								{props.discountPrice}
 							</span>
-							<span className=" text-green-500 ">{props.discountPrice}</span>
 						</div>
 
 						<Separator orientation="vertical" />
 
 						{props.deliveryPrice ? (
 							<div className="text-slate-400 flex items-center gap-1">
-								<span>
+								<span className="block">
 									<Truck />
 								</span>
-								<span className="">{props.deliveryPrice}</span>
+								<div className="flex  items-center">
+									<span className=" pl-1 ">{keywords.currency[lang]}</span>
+									<span className="font-semibold">{props.deliveryPrice}</span>
+								</div>
 							</div>
 						) : (
 							<div className="text-slate-400 flex items-center">
 								<span>
 									<Truck size="25" />
 								</span>
-								<span className="">Free</span>
+								<span className="">{keywords.free[lang]}</span>
 							</div>
 						)}
 
 						<Separator orientation="vertical" />
 
-						<a href={props.userAvatar} className="flex items-center">
+						<a href={props.userAvatar} className="flex items-center gap-1">
 							<span>
 								<img
 									src={faker.image.avatar()}
-									alt="avatar"
+									alt={`${props.username} ${keywords.avatar[lang]}`}
 									className="w-4 h-4 rounded-full"
 								/>
 							</span>
@@ -141,7 +147,7 @@ const DealListingCard = ({
 									</Button>
 									<Input
 										readOnly
-										className="mx-1 h-6 p-0 text-center text-xs pl-1 rounded-full font-semibold pr-9"
+										className="mx-1 h-[26px] px-1  p-0 text-center text-xs rounded-full font-semibold pr-9 overflow-hidden line-clamp-1"
 										value={props.couponCode}
 									></Input>
 								</form>
@@ -150,23 +156,25 @@ const DealListingCard = ({
 							""
 						)}
 
-						<Button className="bg-accent rounded-2xl text-sm" size="xs">
+						<Button className="bg-accent rounded-2xl px-1 py-[2px] text-sm" size="xs">
 							{props.type === "coupon" ? (
-								<TicketPercent size={14} />
+								<TicketPercent size={16} />
 							) : (
-								<Tag size={14} />
+								<Tag size={16} />
 							)}
 
-							<span className="px-1">
-								{props.type === "coupon" ? "Grab Coupon" : "Get Deal"}
+							<span className="px-1 text-sm">
+								{props.type === "coupon"
+									? keywords.grabCoupon[lang]
+									: keywords.getDeal[lang]}
 							</span>
 						</Button>
 
-						<Button size="sm" variant="outline" size="xs" className="rounded-full">
-							<Bookmark size={14} />
+						<Button variant="outline" size="xs" className="p-1 rounded-full">
+							<Bookmark size={16} />
 						</Button>
-						<Button size="sm" variant="outline" size="xs" className="rounded-full">
-							<MessageCircle size={14} />
+						<Button variant="outline" size="xs" className="p-1 rounded-full">
+							<MessageCircle size={16} />
 						</Button>
 					</Card>
 				</div>
@@ -175,4 +183,4 @@ const DealListingCard = ({
 	);
 };
 
-export default DealListingCard;
+export default DealListingCardNarrow;

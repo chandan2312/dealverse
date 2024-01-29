@@ -1,11 +1,14 @@
 import React from "react";
 import SingleDeal from "@repo/ui/pages/SingleDeal";
 
-const DealPage = () => {
+const DealPage = ({ params }) => {
+	const slug = params.slug;
 	return (
-		<>
-			<SingleDeal />
-		</>
+		<SingleDeal
+			lang={process.env.LANGUAGE}
+			server={process.env.BACKEND_URL}
+			slug={slug}
+		/>
 	);
 };
 

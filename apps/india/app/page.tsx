@@ -4,7 +4,7 @@ import HomePage from "@repo/ui/pages/HomePage";
 const page = () => {
 	return (
 		<>
-			<HomePage />
+			<HomePage lang={process.env.LANGUAGE} />
 		</>
 	);
 };

@@ -11,14 +11,18 @@ import {
 	CardTitle,
 } from "../components/ui/card";
 import CategoriesCorousel from "../components/CategoriesCorousel";
-import Filters from "../components/Filters";
 import DealListingCard from "../components/DealListingCard";
 import TopStoreWidget from "../components/TopStoreWidget";
 import TopCategoriesWidget from "../components/TopCategoriesWidget";
 
 import { MonitorSmartphone } from "lucide-react";
 
-const HomePage = () => {
+import { keywords } from "../constants/keywords";
+import { homePageTabs } from "../constants/constants";
+import TabList from "../components/custom/TabList";
+import Filters from "../components/custom/Filters";
+
+const HomePage = ({ lang }) => {
 	const dummyCategory = {
 		name: "Electronics",
 		slug: "electronics",
@@ -28,7 +32,7 @@ const HomePage = () => {
 		<>
 			{/* categories carousel */}
 			<Card className="flex justify-center w-full p-4 bg-primary">
-				<CategoriesCorousel />
+				<CategoriesCorousel lang={lang} />
 			</Card>
 
 			{/* -------------- Listing and Sidebars -------------- */}
@@ -37,10 +41,12 @@ const HomePage = () => {
 				{/* Left */}
 
 				<div className="col-span-12 md:col-span-7 lg:col-span-8  w-full">
-					<Card className="w-full mx-auto px-auto px-4 py-2">
-						<Filters />
+					<Card className="w-full mx-auto px-auto px-4 py-2 flex items-center justify-between">
+						<TabList lang={lang} tabList={homePageTabs} />
+						<Filters lang={lang} />
 					</Card>
 					<DealListingCard
+						lang={lang}
 						title="Apple iPhone 12 Pro Max"
 						description="Apple iPhone 12 Pro Max (128GB) - Pacific Blue"
 						storeName="Amazon"
@@ -66,6 +72,7 @@ const HomePage = () => {
 					/>
 
 					<DealListingCard
+						lang={lang}
 						className="w-full"
 						title="Apple iPhone 12 Pro Max"
 						description="Apple iPhone 12 Pro Max (128GB) - Pacific Blue"
@@ -91,6 +98,7 @@ const HomePage = () => {
 					/>
 
 					<DealListingCard
+						lang={lang}
 						className="w-full"
 						title="Apple iPhone 13 Pro Max"
 						offer="25% Off"
@@ -118,8 +126,8 @@ const HomePage = () => {
 				</div>
 				{/* Right sidebar*/}
 				<Card className="col-span-12 md:col-span-5 lg:col-span-4">
-					<TopStoreWidget />
-					<TopCategoriesWidget />
+					<TopStoreWidget lang={lang} />
+					<TopCategoriesWidget lang={lang} />
 				</Card>
 			</div>
 		</>

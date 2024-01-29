@@ -3,6 +3,8 @@ import "@repo/ui/styles.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import Navbar from "@repo/ui/components/navbar";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -15,9 +17,14 @@ export default function RootLayout({
 }: {
 	children: React.ReactNode;
 }): JSX.Element {
+	// Set the lang variable
+
 	return (
-		<html lang="en">
-			<body className={inter.className}>{children}</body>
+		<html lang={process.env.LANGUAGE}>
+			<body className={`${inter.className} max-w-[1360px] mx-auto px-auto`}>
+				<Navbar lang={process.env.LANGUAGE} />
+				{children}
+			</body>
 		</html>
 	);
 }

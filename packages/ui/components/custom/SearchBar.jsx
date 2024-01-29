@@ -3,10 +3,12 @@ import { Input } from "../ui/input";
 
 import { Search } from "lucide-react";
 
-export default function SearchBar() {
+import { keywords } from "../../constants/keywords";
+
+export default function SearchBar({ lang }) {
 	return (
 		<div className="flex w-full max-w-sm items-center space-x-2">
-			<Input type="email" placeholder="keyword" />
+			<Input type="text" placeholder={keywords.search[lang]} />
 			<Button
 				size="icon"
 				// variant="destructive"

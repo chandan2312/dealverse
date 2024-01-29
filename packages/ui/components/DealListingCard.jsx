@@ -20,7 +20,10 @@ import { Input } from "./ui/input";
 
 import { faker } from "@faker-js/faker";
 
+import { keywords } from "../constants/keywords";
+
 const DealListingCard = ({
+	lang,
 	className,
 	title,
 	description,
@@ -38,30 +41,22 @@ const DealListingCard = ({
 				</div>
 			</div>
 
-			<CardContent className="flex items-center gap-3">
+			<CardContent className="p-0 flex items-center gap-3">
 				<div className="w-36 h-36 bg-secondary rounded-md flex flex-col justify-center items-center overflow-hidden">
 					<img
 						src={props.coverImage}
 						alt="deal"
 						className="w-auto h-auto m-auto p-auto object-cover p-1 "
 					/>
-
-					{props.offer ? (
-						<div className="italic font-bold text-green-600  text-accent-foreground rounded-full p-1 pb-2">
-							{props.offer}
-						</div>
-					) : (
-						""
-					)}
 				</div>
 				<div className="w-full relative">
-					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-1">
+					<div className="flex mt-2 items-center justify-between">
+						<div className="flex items-center gap-1 text-xs ">
 							<UpVoteButton upVote={10} />
 
 							<Separator orientation="vertical" />
 
-							<a href={props.storeLink} className="flex items-center text-sm">
+							<a href={props.storeLink} className="flex items-center ">
 								<span className="px-1">
 									<img
 										src={faker.image.avatar()}
@@ -75,9 +70,11 @@ const DealListingCard = ({
 							<Separator orientation="vertical" />
 
 							{category?.name ? (
-								<a href={`/${category.slug}`} className="flex items-center text-sm">
+								<a href={`/${category.slug}`} className="flex items-center ">
 									<span className="px-1">{category.icon ? category.icon : ""}</span>
-									<span className="text-slate-400 ">{category.name}</span>
+									<span className="text-slate-400 ">
+										{keywords[category.slug][lang]}
+									</span>
 								</a>
 							) : (
 								""
@@ -85,7 +82,9 @@ const DealListingCard = ({
 						</div>
 					</div>
 
-					<h2 className="text-xl text-primary-foreground">{title}</h2>
+					<h2 className="text-xl max-md:text-lg font-semibold text-primary-foreground">
+						{title}
+					</h2>
 					<p className="text-sm text-primary-foreground">{description}</p>
 
 					{/* ------------------- Pricing ---------------- */}
@@ -109,18 +108,19 @@ const DealListingCard = ({
 							</div>
 						) : (
 							<div className="text-slate-400 flex items-center">
-								<span>
+								<span className="pr-1">
 									<Truck size="25" />
 								</span>
-								<span className="">
-									Free <span className="max-md:hidden">Delivery</span>
+								<span className="text-xs">
+									{keywords.free[lang]}{" "}
+									<span className="max-md:hidden">{keywords.delivery[lang]}</span>
 								</span>
 							</div>
 						)}
 
 						<Separator orientation="vertical" />
 
-						<a href={props.userAvatar} className="flex items-center">
+						<a href={props.userAvatar} className="flex gap-1 items-center text-xs">
 							<span>
 								<img
 									src={faker.image.avatar()}
@@ -161,14 +161,16 @@ const DealListingCard = ({
 							{props.type === "coupon" ? <TicketPercent /> : <Tag />}
 
 							<span className="px-1">
-								{props.type === "coupon" ? "Grab Coupon" : "Get Deal"}
+								{props.type === "coupon"
+									? keywords.grabCoupon[lang]
+									: keywords.getDeal[lang]}
 							</span>
 						</Button>
 
-						<Button size="sm" variant="outline" size="icon" className="rounded-full">
+						<Button size="sm" variant="outline" className="rounded-full">
 							<Bookmark />
 						</Button>
-						<Button size="sm" variant="outline" size="icon" className="rounded-full">
+						<Button size="sm" variant="outline" className="rounded-full">
 							<MessageCircle />
 						</Button>
 					</Card>

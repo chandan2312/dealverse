@@ -3,8 +3,9 @@ import { Card, CardContent } from "../ui/card";
 
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import { keywords } from "../../constants/keywords";
 
-const AddComment = () => {
+const AddComment = ({ lang }) => {
 	return (
 		<>
 			<Card>
@@ -17,8 +18,8 @@ const AddComment = () => {
 					</div>
 
 					<div className="grid w-full gap-2 mx-3 ">
-						<Textarea placeholder="Type your comment here" />
-						<Button variant="secondary">Add Comment</Button>
+						<Textarea placeholder={keywords.typeYourCommentHere[lang]} />
+						<Button variant="secondary">{keywords.addComment[lang]}</Button>
 					</div>
 				</CardContent>
 			</Card>

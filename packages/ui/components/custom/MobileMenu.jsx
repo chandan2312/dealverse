@@ -19,7 +19,9 @@ import {
 	SheetTrigger,
 } from "../ui/sheet";
 
-const MobileMenu = () => {
+import { keywords } from "../../constants/keywords";
+
+const MobileMenu = ({ lang }) => {
 	return (
 		<>
 			<Sheet>

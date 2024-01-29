@@ -51,7 +51,9 @@ const components = [
 	},
 ];
 
-export function Menu() {
+import { keywords } from "../../constants/keywords.js";
+
+export function Menu({ lang }) {
 	return (
 		<NavigationMenu>
 			<NavigationMenuList>

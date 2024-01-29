@@ -4,7 +4,9 @@ import StoreListCard from "./custom/StoreListCard";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
-const TopStoreWidget = () => {
+import { keywords } from "../constants/keywords";
+
+const TopStoreWidget = ({ lang }) => {
 	const topStores = [
 		{
 			name: "Amazon",
@@ -63,7 +65,9 @@ const TopStoreWidget = () => {
 		<>
 			<Card className="mx-1 bg-primary mt-2">
 				<CardHeader className="py-1 pt-3">
-					<CardTitle className="text-lg text-semibold">Top Stores</CardTitle>
+					<CardTitle className="text-lg text-semibold">
+						{keywords.topStores[lang]}
+					</CardTitle>
 				</CardHeader>
 
 				<CardContent className="grid grid-cols-12 gap-3">
@@ -85,7 +89,7 @@ const TopStoreWidget = () => {
 						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-primary-foreground"
 					>
 						<ExternalLink />
-						<span className="px-1 text-xs">View All Stores</span>
+						<span className="px-1 text-xs">{keywords.viewAllStores[lang]}</span>
 					</Link>
 				</CardContent>
 			</Card>

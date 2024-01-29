@@ -6,9 +6,7 @@ dotenv.config({
 	path: "./app/.env",
 });
 
-// Then use it like this
 serverPromise.then(({ default: server }) => {
-	// Now you can use 'server' here
 	const result = server(
 		process.env.BACKEND_PORT,
 		process.env.DB_SERVER_URL,

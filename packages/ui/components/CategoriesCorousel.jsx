@@ -9,10 +9,11 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "./ui/carousel";
-
 import { Button } from "./ui/button";
 
-export default function CategoriesCorousel() {
+import { keywords } from "../constants/keywords";
+
+export default function CategoriesCorousel({ lang }) {
 	return (
 		<Carousel className="w-[86%]">
 			<CarouselContent className="-ml-1 w-full">

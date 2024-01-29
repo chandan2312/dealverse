@@ -13,7 +13,9 @@ import { Label } from "../ui/label";
 
 import LoginForm from "./LoginForm";
 
-export function LoginDialog({ title, buttonText }) {
+import { keywords } from "../../constants/keywords";
+
+export function LoginDialog({ lang, title, buttonText }) {
 	return (
 		<Dialog>
 			<DialogTrigger asChild>

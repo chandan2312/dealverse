@@ -1,0 +1,8 @@
+{
+    "breadcrumbs.icons": true,
+    "terminal.integrated.cursorStyleInactive": "outline",
+    "terminal.integrated.enableBell": true,
+    "terminal.integrated.enableImages": true,
+    "terminal.integrated.fontSize": 12,
+    "terminal.integrated.hideOnStartup": "whenEmpty"
+}

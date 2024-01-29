@@ -7,7 +7,11 @@ import Link from "next/link";
 
 import CouponShow from "./CouponShow";
 
+import { keywords } from "../../constants/keywords";
+import langModule from "../../helpers/langModule";
+
 const CouponButton = ({ ...props }) => {
+	const lang = langModule.lang();
 	return (
 		<>
 			<div className="relative">
@@ -43,7 +47,7 @@ const CouponButton = ({ ...props }) => {
 			<Button className={`bg-accent ml-8 rounded-full`}>
 				<Link className="flex items-center" href={props.link}>
 					<ExternalLink />
-					<span className="px-1">Go to Offer</span>
+					<span className="px-1">{keywords.goToOffer[lang]}</span>
 				</Link>
 			</Button>
 		</>

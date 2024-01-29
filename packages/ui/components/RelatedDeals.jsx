@@ -4,7 +4,9 @@ import DealListingCardNarrow from "./DealListingCardNarrow";
 import { MonitorSmartphone, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-const TopCategoriesWidget = () => {
+import { keywords } from "../constants/keywords";
+
+const TopCategoriesWidget = ({ lang }) => {
 	const related = [
 		{
 			name: "Electronics",
@@ -18,13 +20,14 @@ const TopCategoriesWidget = () => {
 			<Card className="mx-1 bg-primary mt-2">
 				<CardHeader className="py-1 pt-3 mx-0">
 					<CardTitle className="text-lg mx-0 px-0 text-semibold">
-						Similar Offer You Many Like
+						{keywords.similarOffersYouMayLike[lang]}
 					</CardTitle>
 				</CardHeader>
 
 				<CardContent className="flex items-center gap-1 mx-0 flex-wrap">
 					{Array.from({ length: 5 }).map((deal, index) => (
 						<DealListingCardNarrow
+							lang={lang}
 							className="w-full"
 							title="Apple iPhone 13 Pro Max"
 							description="Apple iPhone 13 (64GB) - Faint Pink"
@@ -57,7 +60,7 @@ const TopCategoriesWidget = () => {
 						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-primary-foreground"
 					>
 						<ExternalLink />
-						<span className="px-1 text-xs">View All Deals</span>
+						<span className="px-1 text-xs">{keywords.viewAllDeals[lang]}</span>
 					</Link>
 				</CardContent>
 			</Card>

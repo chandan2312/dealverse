@@ -4,8 +4,7 @@ import HomePage from "@repo/ui/pages/HomePage";
 const page = () => {
 	return (
 		<>
-			<p className="text-2xl text-blue-500">Korea Home Page</p>
-			<HomePage />
+			<HomePage lang={process.env.LANGUAGE} />
 		</>
 	);
 };

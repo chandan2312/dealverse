@@ -18,9 +18,9 @@ export default function RootLayout({
 	children: React.ReactNode;
 }): JSX.Element {
 	return (
-		<html lang="en">
+		<html lang={process.env.LANGUAGE}>
 			<body className={`${inter.className} max-w-[1360px] mx-auto px-auto`}>
-				<Navbar />
+				<Navbar lang={process.env.LANGUAGE} />
 				{children}
 			</body>
 		</html>

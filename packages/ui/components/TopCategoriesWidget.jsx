@@ -4,7 +4,9 @@ import CategoryListCard from "./custom/CategoryListCard";
 import { MonitorSmartphone, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
-const TopCategoriesWidget = () => {
+import { keywords } from "../constants/keywords";
+
+const TopCategoriesWidget = ({ lang }) => {
 	const topCategories = [
 		{
 			name: "Electronics",
@@ -52,7 +54,9 @@ const TopCategoriesWidget = () => {
 		<>
 			<Card className="mx-1 bg-primary mt-2">
 				<CardHeader className="py-1 pt-3">
-					<CardTitle className="text-lg text-semibold">Top Categories</CardTitle>
+					<CardTitle className="text-lg text-semibold">
+						{keywords.topCategories[lang]}
+					</CardTitle>
 				</CardHeader>
 
 				<CardContent className="flex items-center gap-1 flex-wrap">
@@ -73,7 +77,7 @@ const TopCategoriesWidget = () => {
 						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-primary-foreground"
 					>
 						<ExternalLink />
-						<span className="px-1 text-xs">View All Categories</span>
+						<span className="px-1 text-xs">{keywords.viewAllCategories[lang]}</span>
 					</Link>
 				</CardContent>
 			</Card>

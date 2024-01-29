@@ -6,11 +6,17 @@ import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
 import { LoginDialog } from "./LoginDialog";
 
-const Profile = () => {
+import { keywords } from "../../constants/keywords";
+
+const Profile = ({ lang }) => {
 	return (
 		<div className="flex gap-2 items-center">
 			<div>
-				<LoginDialog buttonText="Login" title="Login User" />
+				<LoginDialog
+					lang={lang}
+					buttonText={keywords.login[lang]}
+					title="Login User"
+				/>
 			</div>
 
 			<div className="w-9 h-9 bg-slate-500 rounded-full"></div>

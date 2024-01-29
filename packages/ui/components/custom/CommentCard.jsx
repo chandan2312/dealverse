@@ -2,8 +2,11 @@ import React from "react";
 import { Card, CardContent } from "../ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
 
 import IconAndText from "./IconAndText";
+
+import { keywords } from "../../constants/keywords";
 
 import {
 	Heart,
@@ -15,7 +18,7 @@ import {
 
 import Link from "next/link";
 
-const CommentCard = ({ comment, className }) => {
+const CommentCard = ({ lang, comment, className }) => {
 	return (
 		<Card>
 			<CardContent className={`p-3 ${className}`}>
@@ -32,50 +35,55 @@ const CommentCard = ({ comment, className }) => {
 						</div>
 					</div>
 
-					<Popover className="bg-primary">
-						<PopoverTrigger>
-							<MoreHorizontal />
-						</PopoverTrigger>
-						<PopoverContent>
-							<Link href="/report" className="w-full bg-primary hover:bg-secondary">
-								<IconAndText
-									size="sm"
-									variant="ghost"
-									className="px-1 hover:bg-transparent"
-									icon={<AlertTriangle />}
-									text={"Report"}
-								/>
-							</Link>
-							<Link
-								href="/copy-link-of-comment"
-								className="w-full bg-primary hover:bg-secondary"
-							>
-								<IconAndText
-									size="sm"
-									variant="ghost"
-									className="px-1  hover:bg-transparent"
-									icon={<Clipboard />}
-									text={"Copy Comment Link"}
-								/>
-							</Link>
-						</PopoverContent>
-					</Popover>
-				</div>
-
-				<div className="py-2 px-3">
-					<div dangerouslySetInnerHTML={{ __html: comment.body }}></div>
-				</div>
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<IconAndText size="sm" variant="ghost" icon={<Heart />} text={"Like"} />
+					<div className="flex gap-1 items-center">
+						<IconAndText
+							size="sm"
+							variant="ghost"
+							icon={<Heart />}
+							text={keywords.like[lang]}
+						/>
 						<IconAndText
 							size="sm"
 							variant="ghost"
 							icon={<ReplyAll />}
-							text={"Reply"}
+							text={keywords.reply[lang]}
 						/>
+
+						<Button size="sm" variant="ghost">
+							<Popover className="bg-primary">
+								<PopoverTrigger>
+									<MoreHorizontal />
+								</PopoverTrigger>
+								<PopoverContent>
+									<Link href="/report" className="w-full bg-primary hover:bg-secondary">
+										<IconAndText
+											size="sm"
+											variant="ghost"
+											className="px-1 hover:bg-transparent"
+											icon={<AlertTriangle />}
+											text={keywords.report[lang]}
+										/>
+									</Link>
+									<Link
+										href="/copy-link-of-comment"
+										className="w-full bg-primary hover:bg-secondary"
+									>
+										<IconAndText
+											size="sm"
+											variant="ghost"
+											className="px-1  hover:bg-transparent"
+											icon={<Clipboard />}
+											text={keywords.copyCommentLink[lang]}
+										/>
+									</Link>
+								</PopoverContent>
+							</Popover>
+						</Button>
 					</div>
-					<div></div>
+				</div>
+
+				<div className="py-2 px-3">
+					<div dangerouslySetInnerHTML={{ __html: comment.body }}></div>
 				</div>
 			</CardContent>
 

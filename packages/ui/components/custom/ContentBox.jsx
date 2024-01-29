@@ -1,7 +1,14 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
-const ContentBox = ({ style, title, titleStyle, content, contentStyle }) => {
+const ContentBox = ({
+	lang,
+	style,
+	title,
+	titleStyle,
+	content,
+	contentStyle,
+}) => {
 	return (
 		<>
 			<Card className={` ${style}`}>

@@ -13,13 +13,18 @@ import IconAndText from "../components/custom/IconAndText";
 
 import { MessageSquare, Bookmark } from "lucide-react";
 
-const SingleDeal = () => {
+import { keywords } from "../constants/keywords";
+
+const SingleDeal = ({ server, lang }) => {
+	console.log("Single Deal Comp");
+	console.log("Language: ", lang);
 	return (
 		<>
 			<Card className="grid grid-cols-12 mt-4 shadow-none">
 				{/* ------------ Left Side -------------- */}
 				<Card className="col-span-12 md:col-span-8 shadow-none">
 					<DealInfoCard
+						lang={lang}
 						upVotes={10}
 						commentCount={5}
 						createdAt="12/12/2021"
@@ -36,8 +41,9 @@ const SingleDeal = () => {
 					{/* --------------- Description ---------------- */}
 
 					<ContentBox
+						lang={lang}
 						style="mt-2"
-						title="Description"
+						title={keywords.description[lang]}
 						content="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum?"
 					/>
 					<Card className="flex items-center gap-2 p-3 ">
@@ -46,20 +52,21 @@ const SingleDeal = () => {
 							variant="ghost"
 							className="px-1"
 							icon={<MessageSquare />}
-							text={"Add Comment"}
+							text={keywords.addComment[lang]}
 						/>
 						<IconAndText
 							size="sm"
 							variant="ghost"
 							className="px-1"
 							icon={<Bookmark />}
-							text={"Save Offer"}
+							text={keywords.saveLater[lang]}
 						/>
 					</Card>
 
 					{/* --------------- Comments ---------------- */}
 
 					<CommentSection
+						lang={lang}
 						style="mt-2"
 						title="Discussion"
 						commentCount={13}
@@ -121,9 +128,9 @@ const SingleDeal = () => {
 				{/* ------------ Right Side -------------- */}
 
 				<Card className="col-span-12 md:col-span-4">
-					<RelatedDeals />
-					<TopStoreWidget />
-					<TopCategoriesWidget />
+					<RelatedDeals lang={lang} />
+					<TopStoreWidget lang={lang} />
+					<TopCategoriesWidget lang={lang} />
 				</Card>
 			</Card>
 		</>
