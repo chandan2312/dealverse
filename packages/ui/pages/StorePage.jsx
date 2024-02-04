@@ -1,14 +1,17 @@
 import React from "react";
 import { Card, CardContent } from "../components/ui/card";
+import { ScrollArea } from "../components/ui/scroll-area";
+
 import Link from "next/link";
 
 import TopStoreWidget from "../components/TopStoreWidget";
 import RelatedDeals from "../components/RelatedDeals";
 import TopCategoriesWidget from "../components/TopCategoriesWidget";
-import DealListingCard from "../components/DealListingCard";
+import DealListCard from "../components/DealListCard";
 
 import TabList from "../components/custom/TabList";
 import Filters from "../components/custom/Filters";
+import PaginationCard from "../components/custom/PaginationCard";
 
 import { keywords } from "../constants/keywords";
 import { storePageTabs } from "../constants/constants";
@@ -21,6 +24,8 @@ import {
 	MessageSquareMore,
 	MonitorSmartphone,
 } from "lucide-react";
+import ShareToButton from "../components/custom/ShareToButton";
+import DiscussionListCard from "../components/DiscussionListCard";
 
 const StorePage = ({ lang, server, slug }) => {
 	const dummyCategory = {
@@ -30,7 +35,7 @@ const StorePage = ({ lang, server, slug }) => {
 	};
 
 	return (
-		<div className="grid grid-cols-12">
+		<div className=" grid grid-cols-12">
 			<Card className="col-span-12 md:col-span-7 lg:col-span-8">
 				<CardContent className="flex items-center gap-5">
 					<div className="w-24 h-24 flex items-center justify-center">
@@ -43,7 +48,10 @@ const StorePage = ({ lang, server, slug }) => {
 
 					<div>
 						<div className="text-xs text-center mx-auto px-auto">
-							<Link href={"/"}>Home</Link> / <Link href={"/stores"}>Stores</Link> /{" "}
+							<div>
+								<Link href={"/"}>Home</Link> / <Link href={"/stores"}>Stores</Link> /{" "}
+							</div>
+
 							<Link href={"/store/amazon"}>Amazon</Link>
 						</div>
 						<h1 className="text-2xl font-bold">Amazon</h1>
@@ -56,10 +64,11 @@ const StorePage = ({ lang, server, slug }) => {
 				</CardContent>
 
 				<CardContent>
+					{/* <PaginationCard /> */}
 					{Array(10)
 						.fill()
 						.map((_, i) => (
-							<DealListingCard
+							<DealListCard
 								lang={lang}
 								title="Apple iPhone 12 Pro Max"
 								description="Apple iPhone 12 Pro Max (128GB) - Pacific Blue"
@@ -84,6 +93,18 @@ const StorePage = ({ lang, server, slug }) => {
 								isExpired={false}
 							/>
 						))}
+
+					{/* {Array(10)
+						.fill()
+						.map((_, i) => (
+							<DiscussionListCard lang={lang} />
+						))} */}
+					{/* {Array(10)
+						.fill()
+						.map((_, i) => (
+							<PostListCard lang={lang} />
+						))} */}
+					<PaginationCard />
 				</CardContent>
 			</Card>
 
@@ -91,6 +112,7 @@ const StorePage = ({ lang, server, slug }) => {
 				<TopStoreWidget lang={lang} />
 				<RelatedDeals lang={lang} />
 				<TopCategoriesWidget lang={lang} />
+				<ShareToButton lang={lang} />
 			</aside>
 		</div>
 	);

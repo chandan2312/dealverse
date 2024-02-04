@@ -36,6 +36,38 @@ export const keywords = {
 		en: "Register",
 		kr: "회원가입",
 	},
+	share: {
+		en: "Share",
+		kr: "공유",
+	},
+	previous: {
+		en: "Previous",
+		kr: "이전",
+	},
+	next: {
+		en: "Next",
+		kr: "다음",
+	},
+	or: {
+		en: "or",
+		kr: "또는",
+	},
+	please: {
+		en: "Please",
+		kr: "부디",
+	},
+	light: {
+		en: "Light",
+		kr: "밝은",
+	},
+	dark: {
+		en: "Dark",
+		kr: "어두운",
+	},
+	system: {
+		en: "System",
+		kr: "시스템",
+	},
 	//--------------------------------------------------------- Menu
 	menu: {
 		en: "Menu",
@@ -82,10 +114,6 @@ export const keywords = {
 	verified: {
 		en: "Verified",
 		kr: "검증됨",
-	},
-	addComment: {
-		en: "Add Comment",
-		kr: "댓글 추가",
 	},
 	comments: {
 		en: "Comments",
@@ -163,12 +191,28 @@ export const keywords = {
 		en: "Sort by",
 		kr: "정렬",
 	},
+	view: {
+		en: "View",
+		kr: "보기",
+	},
+	views: {
+		en: "Views",
+		kr: "조회수",
+	},
 	like: {
 		en: "Like",
 		kr: "좋아요",
 	},
+	likes: {
+		en: "Likes",
+		kr: "좋아요",
+	},
 	reply: {
 		en: "Reply",
+		kr: "답글",
+	},
+	replies: {
+		en: "Replies",
 		kr: "답글",
 	},
 	report: {
@@ -183,6 +227,179 @@ export const keywords = {
 		en: "Share",
 		kr: "공유",
 	},
+	save: {
+		en: "Save",
+		kr: "저장",
+	},
+	addNotification: {
+		en: "Add Notification",
+		kr: "알림 추가",
+	},
+	//--------------------------------------------------------- profile
+	profile: {
+		en: "Profile",
+		kr: "프로필",
+	},
+	followers: {
+		en: "Followers",
+		kr: "팔로워",
+	},
+	following: {
+		en: "Following",
+		kr: "팔로잉",
+	},
+	statistics: {
+		en: "Statistics",
+		kr: "통계",
+	},
+	username: {
+		en: "Username",
+		kr: "사용자 이름",
+	},
+	email: {
+		en: "Email",
+		kr: "이메일",
+	},
+	fullName: {
+		en: "Full Name",
+		kr: "전체 이름",
+	},
+	password: {
+		en: "Password",
+		kr: "비밀번호",
+	},
+	loginToYourAccount: {
+		en: "Login to your account",
+		kr: "로그인",
+	},
+	createAnAccount: {
+		en: "Create an account",
+		kr: "계정 생성",
+	},
+	loginWithGoogle: {
+		en: "Login with Google",
+		kr: "구글로 로그인",
+	},
+	registerWithGoogle: {
+		en: "Register with Google",
+		kr: "구글로 회원가입",
+	},
+	loginWithFacebook: {
+		en: "Login with Facebook",
+		kr: "페이스북으로 로그인",
+	},
+	registerWithFacebook: {
+		en: "Register with Facebook",
+		kr: "페이스북으로 회원가입",
+	},
+	loginWithTwitter: {
+		en: "Login with Twitter",
+		kr: "트위터로 로그인",
+	},
+	registerWithTwitter: {
+		en: "Register with Twitter",
+		kr: "트위터로 회원가입",
+	},
+
+	//--------------------------------------------------------- Form
+	byClickingContinue: {
+		en: "By clicking continue, you agree to our",
+		kr: "계속 클릭하면 당사의",
+	},
+	termsAndConditions: {
+		en: "Terms and Conditions",
+		kr: "이용약관",
+	},
+	privacyPolicy: {
+		en: "Privacy Policy",
+		kr: "개인정보 보호정책",
+	},
+	disclaimer: {
+		en: "Disclaimer",
+		kr: "면책 조항",
+	},
+	aboutUs: {
+		en: "About Us",
+		kr: "회사 소개",
+	},
+	copyright: {
+		en: "Copyright",
+		kr: "저작권",
+	},
+	alreadyHaveAnAccount: {
+		en: "Already have an account?",
+		kr: "이미 계정이 있으신가요?",
+	},
+	enterYourEmail: {
+		en: "Enter your email",
+		kr: "이메일을 입력하세요",
+	},
+
+	enterYourPassword: {
+		en: "Enter your password",
+		kr: "비밀번호를 입력하세요",
+	},
+	reEnterYourPassword: {
+		en: "Re-enter your password",
+		kr: "비밀번호를 다시 입력하세요",
+	},
+	enterYourName: {
+		en: "Enter your name",
+		kr: "이름을 입력하세요",
+	},
+	enterYourUsername: {
+		en: "Enter your username",
+		kr: "사용자 이름을 입력하세요",
+	},
+	addComment: {
+		en: "Add Comment",
+		kr: "댓글 추가",
+	},
+	addYourComment: {
+		en: "Add your comment",
+		kr: "댓글을 입력하세요",
+	},
+	ifYouDontHaveAnAccount: {
+		en: "If you don't have an account",
+		kr: "계정이 없으신가요?",
+	},
+	isRequired: {
+		en: "is required",
+		kr: "필수 항목입니다",
+	},
+	invalid: {
+		en: "Invalid",
+		kr: "잘못된",
+	},
+	details: {
+		en: "Details",
+		kr: "세부사항",
+	},
+	passwordMustBe: {
+		en: "Password must be at least 8 characters long",
+		kr: "비밀번호는 최소 8자 이상이어야 합니다",
+	},
+	confirmationPasswordRequired: {
+		en: "Confirmation",
+		kr: "확인",
+	},
+	passwordsNotMatches: {
+		en: "Passwords do not match",
+		kr: "비밀번호가 일치하지 않습니다",
+	},
+	typeNewPassword: {
+		en: "Type new password",
+		kr: "새 비밀번호 입력",
+	},
+	confirmationEmailSent: {
+		en: "Confirmation email sent",
+		kr: "확인 이메일 전송됨",
+	},
+	sentVerificationEmail: {
+		en: "We have sent a verification email to your email address",
+		kr: "확인 이메일을 귀하의 이메일 주소로 보냈습니다",
+	},
+
 	//--------------------------------------------------------- others
 	about: {
 		en: "About",

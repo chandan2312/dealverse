@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "./ui/card";
-import DealListingCardNarrow from "./DealListingCardNarrow";
+import DealListCardNarrow from "./DealListCardNarrow";
 import { MonitorSmartphone, ExternalLink } from "lucide-react";
 import Link from "next/link";
 
@@ -26,7 +26,7 @@ const TopCategoriesWidget = ({ lang }) => {
 
 				<CardContent className="flex items-center gap-1 mx-0 flex-wrap">
 					{Array.from({ length: 5 }).map((deal, index) => (
-						<DealListingCardNarrow
+						<DealListCardNarrow
 							lang={lang}
 							className="w-full"
 							title="Apple iPhone 13 Pro Max"
@@ -57,7 +57,7 @@ const TopCategoriesWidget = ({ lang }) => {
 				<CardContent className="flex justify-center">
 					<Link
 						href="/deals"
-						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-primary-foreground"
+						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-text1"
 					>
 						<ExternalLink />
 						<span className="px-1 text-xs">{keywords.viewAllDeals[lang]}</span>

@@ -16,7 +16,7 @@ const config: Omit<Config, "content"> = {
 				foreground: "hsl(var(--foreground))",
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
-					foreground: "hsl(var(--primary-foreground))",
+					foreground: "hsl(var(--text1))",
 				},
 				secondary: {
 					DEFAULT: "hsl(var(--secondary))",

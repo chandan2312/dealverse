@@ -22,7 +22,7 @@ import { faker } from "@faker-js/faker";
 
 import { keywords } from "../constants/keywords";
 
-const DealListingCard = ({
+const DealListCard = ({
 	lang,
 	className,
 	title,
@@ -33,7 +33,7 @@ const DealListingCard = ({
 	return (
 		<Card
 			className={`${className} relative
-			 shadow-md p-1 lg:p-3 bg-primary mx-1 my-3`}
+			 shadow-md p-1 lg:p-3 bg-primary mx-1 my-3 h-[250px]`}
 		>
 			<div className="ribbon-wrapper-green">
 				<div className="ribbon-green">
@@ -82,10 +82,10 @@ const DealListingCard = ({
 						</div>
 					</div>
 
-					<h2 className="text-xl max-md:text-lg font-semibold text-primary-foreground">
+					<h2 className="text-xl max-md:text-lg font-semibold text-text1">
 						{title}
 					</h2>
-					<p className="text-sm text-primary-foreground">{description}</p>
+					<p className="text-sm text-text1">{description}</p>
 
 					{/* ------------------- Pricing ---------------- */}
 
@@ -180,4 +180,4 @@ const DealListingCard = ({
 	);
 };
 
-export default DealListingCard;
+export default DealListCard;

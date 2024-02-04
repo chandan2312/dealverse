@@ -11,7 +11,7 @@ import {
 	CardTitle,
 } from "../components/ui/card";
 import CategoriesCorousel from "../components/CategoriesCorousel";
-import DealListingCard from "../components/DealListingCard";
+import DealListCard from "../components/DealListCard";
 import TopStoreWidget from "../components/TopStoreWidget";
 import TopCategoriesWidget from "../components/TopCategoriesWidget";
 
@@ -45,7 +45,7 @@ const HomePage = ({ lang }) => {
 						<TabList lang={lang} tabList={homePageTabs} />
 						<Filters lang={lang} />
 					</Card>
-					<DealListingCard
+					<DealListCard
 						lang={lang}
 						title="Apple iPhone 12 Pro Max"
 						description="Apple iPhone 12 Pro Max (128GB) - Pacific Blue"
@@ -71,7 +71,7 @@ const HomePage = ({ lang }) => {
 						isExpired={false}
 					/>
 
-					<DealListingCard
+					<DealListCard
 						lang={lang}
 						className="w-full"
 						title="Apple iPhone 12 Pro Max"
@@ -97,7 +97,7 @@ const HomePage = ({ lang }) => {
 						isExpired={false}
 					/>
 
-					<DealListingCard
+					<DealListCard
 						lang={lang}
 						className="w-full"
 						title="Apple iPhone 13 Pro Max"

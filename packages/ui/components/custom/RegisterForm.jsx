@@ -14,48 +14,89 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import Link from "next/link";
-const FormSchema = z
-	.object({
-		username: z.string().min(1, "Username is required").max(100),
-		email: z.string().min(1, "Email is required").email("Invalid email"),
-		password: z
-			.string()
-			.min(1, "Password is required")
-			.min(8, "Password must have than 8 characters"),
-		confirmPassword: z.string().min(1, "Password confirmation is required"),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		path: ["confirmPassword"],
-		message: "Password do not match",
-	});
+import axios from "axios";
+import { keywords } from "../../constants/keywords";
+import AlertCard from "./AlertCard";
+import { useState } from "react";
+import { set } from "mongoose";
+import { useRouter } from "next/navigation";
 
-const RegisterForm = () => {
+const RegisterForm = ({ lang, server, domain }) => {
+	const FormSchema = z
+		.object({
+			username: z
+				.string()
+				.min(1, `${keywords.username[lang]} ${keywords.isRequired[lang]}`)
+				.max(100),
+			fullName: z.string().max(100),
+			email: z
+				.string()
+				.min(1, `${keywords.email[lang]} ${keywords.isRequired[lang]}`)
+				.email(`${keywords.invalid[lang]} ${keywords.email[lang]}`),
+
+			password: z
+				.string()
+				.min(1, `${keywords.password[lang]} ${keywords.isRequired[lang]}`)
+				.min(8, keywords.passwordMustBe[lang]),
+			confirmPassword: z
+				.string()
+				.min(1, keywords.confirmationPasswordRequired[lang]),
+			website: z.string(),
+		})
+		.refine((data) => data.password === data.confirmPassword, {
+			path: ["confirmPassword"],
+			message: keywords.passwordsNotMatches[lang],
+		});
+
+	const [isRegistered, setIsRegistered] = useState(false);
+	const [isError, setIsError] = useState(false);
+	const [response, setResponse] = useState(null);
 	const form = useForm({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
 			username: "",
 			email: "",
+			fullName: "",
 			password: "",
 			confirmPassword: "",
+			website: `${domain}`,
 		},
 	});
 
-	const onSubmit = (values) => {
-		console.log(values);
+	const router = useRouter();
+
+	const handleRegister = async (values) => {
+		const response = await axios.post(`${server}/api/v1/user/register`, values);
+		console.log(response);
+		if (response.data.statusCode === 200) {
+			console.log("response True");
+			setIsError(false);
+			setIsRegistered(true);
+			setResponse(response);
+			router.push("/login", { scroll: false });
+		}
+		if (response.data.statusCode !== 200 || response.data === undefined) {
+			setResponse(response);
+			setIsRegistered(false);
+			setIsError(true);
+			console.log("response Error");
+			console.log(response);
+		}
 	};
 
-	const loginWithGoogle = () => console.log("login with google");
+	const handleRegisterGoogle = () => console.log("login with google");
+	const handleRegisterFacebook = () => console.log("login with fb");
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+			<form onSubmit={form.handleSubmit(handleRegister)} className="w-full">
 				<div className="space-y-2">
 					<FormField
 						control={form.control}
 						name="username"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Username</FormLabel>
+								<FormLabel>{keywords.username[lang]}</FormLabel>
 								<FormControl>
 									<Input placeholder="johndoe" {...field} />
 								</FormControl>
@@ -68,9 +109,22 @@ const RegisterForm = () => {
 						name="email"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Email</FormLabel>
+								<FormLabel>{keywords.email[lang]}</FormLabel>
 								<FormControl>
 									<Input placeholder="mail@example.com" {...field} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="fullName"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>{keywords.fullName[lang]}</FormLabel>
+								<FormControl>
+									<Input placeholder="John Doe" {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -81,9 +135,13 @@ const RegisterForm = () => {
 						name="password"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Password</FormLabel>
+								<FormLabel>{keywords.password[lang]}</FormLabel>
 								<FormControl>
-									<Input type="password" placeholder="Enter your password" {...field} />
+									<Input
+										type="password"
+										placeholder={keywords.typeNewPassword[lang]}
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -94,10 +152,10 @@ const RegisterForm = () => {
 						name="confirmPassword"
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Re-Enter your password</FormLabel>
+								<FormLabel>{keywords.reEnterYourPassword[lang]}</FormLabel>
 								<FormControl>
 									<Input
-										placeholder="Re-Enter your password"
+										placeholder={keywords.reEnterYourPassword[lang]}
 										type="password"
 										{...field}
 									/>
@@ -107,20 +165,39 @@ const RegisterForm = () => {
 						)}
 					/>
 				</div>
-				<Button className="w-full mt-6" type="submit">
-					Sign up
+				{isRegistered && (
+					<AlertCard
+						variant="success"
+						title={keywords.confirmationEmailSent[lang]}
+						message={keywords.sentVerificationEmail[lang]}
+					/>
+				)}
+
+				{isError && (
+					<AlertCard
+						variant="destructive"
+						title={`${keywords.invalid[lang]} ${keywords.details[lang]}`}
+						message={`${keywords.pleaseCheckDetails[lang]} ${keywords.and[lang]} ${keywords.tryAgain[lang]}`}
+					/>
+				)}
+
+				<Button onClick={handleRegister} className="w-full mt-6" type="submit">
+					{keywords.register[lang]}
 				</Button>
 			</form>
 			<div className="mx-auto my-4 flex w-full items-center justify-evenly before:mr-4 before:block before:h-px before:flex-grow before:bg-stone-400 after:ml-4 after:block after:h-px after:flex-grow after:bg-stone-400">
-				or
+				{keywords.or[lang]}
 			</div>
-			<Button onClick={loginWithGoogle} className="w-full">
-				Register with Google
+			<Button onClick={handleRegisterGoogle} className="w-full">
+				{keywords.registerWithGoogle[lang]}
+			</Button>
+			<Button onClick={handleRegisterFacebook} className="w-full">
+				{keywords.registerWithFacebook[lang]}
 			</Button>
 			<p className="text-center text-sm text-gray-600 mt-2">
-				If you don&apos;t have an account, please&nbsp;
+				{`${keywords.alreadyHaveAnAccount[lang]} `}
 				<Link className="text-blue-500 hover:underline" href="/login">
-					Login
+					{keywords.login[lang]}
 				</Link>
 			</p>
 		</Form>

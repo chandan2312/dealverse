@@ -28,46 +28,25 @@ const generateAccessAndRefereshTokens = async (userId) => {
 //---------------------------- registerUser --------------------------//
 
 const registerUser = asyncHandler(async (req, res, next) => {
-	const { fullName, email, username, password, country } = await req.body;
-
-	const requiredFields = [
-		"fullName",
-		"email",
-		"username",
-		"password",
-		"country",
-		"avatar",
-		"bio",
-	];
-	const emptyField = requiredFields.find(
-		(field) => !field || field.trim() === ""
-	);
-
-	if (emptyField) {
-		throw new ApiError(400, `${emptyField} is required`);
-	}
+	console.log(await req.body);
+	const { fullName, email, username, password, website } = await req.body;
 
 	//check user in db if exist
-	const existedUserByEmail = await User.findOne({ email });
-	if (existedUserByEmail) {
-		throw new ApiError(400, "Email already taken. Use another email");
-	}
-	const existedUserByUsername = await User.findOne({
-		username: username.toLowerCase(),
-	});
-
-	if (existedUserByUsername) {
-		throw new ApiError(400, "Username already taken. Use another username");
+	try {
+		const existedUserByEmail = await User.findOne({ email });
+	} catch (error) {
+		console.log(error.message);
+		return res.status(400).json(new ApiResponse(400, error.message));
 	}
 
-	//avatar store
-	console.log(req.files);
-	const avatarLocalPath = req.files?.avatar[0]?.path.replace("public", "");
-	if (!avatarLocalPath) {
-		throw new ApiError(400, "Avatar file is required");
+	try {
+		const existedUserByUsername = await User.findOne({
+			username: username.toLowerCase(),
+		});
+	} catch (error) {
+		console.log(error.message);
+		return res.status(400).json(new ApiResponse(400, error.message));
 	}
-
-	console.log(avatarLocalPath);
 
 	//check ip
 	const ip4Address = ip();
@@ -77,56 +56,52 @@ const registerUser = asyncHandler(async (req, res, next) => {
 	//create user
 	const user = await User.create({
 		fullName,
-		avatar: avatarLocalPath,
 		email,
 		password,
 		username: username.toLowerCase(),
-		country,
+		website,
 		ip4Address,
 		ip6Address,
 	});
 	if (!user) {
-		throw new ApiError(500, "Something went wrong while registering the user");
+		return res.status(500).json(new ApiResponse(500, "something went wrong"));
 	}
 	console.log("user is registered successfully");
 	//to show to users
 	const userDetails = {
 		id: user._id,
 		fullName: user.fullName,
-		avatar: user.avatar,
+		// avatar: user.avatar,
 		email: user.email,
 		username: user.username,
-		country: user.country,
+		createAt: user.createdAt,
+		updatedAt: user.updatedAt,
 	};
 	console.log(userDetails);
 
 	return res
-		.status(201)
-		.json(new ApiResponse(200, userDetails, "User registered Successfully"));
+		.status(200)
+		.json(new ApiResponse(200, "User registered Successfully", userDetails));
 });
 
 //---------------------------- loginUser --------------------------//
 
 const loginUser = asyncHandler(async (req, res, next) => {
-	const { email, username, password } = await req.body;
-
-	if (!username && !email) {
-		throw new ApiError(400, "username or email is required");
-	}
-	if (!password) {
-		throw new ApiError(400, "Password is required");
-	}
+	const { email = "", username = "", password } = await req.body;
 
 	const user = await User.findOne({
-		$or: [{ email }, { username: username.toLowerCase() }],
+		// $or: [{ email }],
+		email: email,
 	});
 	if (!user) {
-		throw new ApiError(400, "Invalid email or username");
+		return res
+			.status(200)
+			.json(new ApiResponse(400, "Invalida Username or Email"));
 	}
 
 	const isMatch = await user.isPasswordCorrect(password);
 	if (!isMatch) {
-		throw new ApiError(400, "Invalid Password");
+		return res.status(200).json(new ApiResponse(400, "InValid Password"));
 	}
 
 	const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
@@ -136,10 +111,9 @@ const loginUser = asyncHandler(async (req, res, next) => {
 	const userDetails = {
 		id: user._id,
 		fullName: user.fullName,
-		avatar: user.avatar,
 		email: user.email,
 		username: user.username,
-		country: user.country,
+		website: user.website,
 	};
 
 	//save cookies
@@ -161,36 +135,54 @@ const loginUser = asyncHandler(async (req, res, next) => {
 					accessToken,
 					refreshToken,
 				},
-				"User logged In Successfully"
+				"Logged In Successfully"
 			)
 		);
+});
+
+//---------------------------- tokenChecker --------------------------//
+
+const tokenChecker = asyncHandler(async (req, res) => {
+	const token =
+		req.cookies?.accessToken ||
+		req.header("Authorization")?.replace("Bearer ", "");
+	if (!token) {
+		return res.status(200).json(new ApiResponse(200, false));
+	}
+	return res.status(200).json(new ApiResponse(200, true));
 });
 
 //---------------------------- logoutUser --------------------------//
 
 const logoutUser = asyncHandler(async (req, res, next) => {
-	await User.findByIdAndUpdate(
-		req.user._id,
-		{
-			$unset: {
-				refreshToken: 1, // this removes the field from document
+	try {
+		await User.findByIdAndUpdate(
+			req.user._id,
+			{
+				$unset: {
+					refreshToken: 1, // this removes the field from document
+				},
 			},
-		},
-		{
-			new: true,
-		}
-	);
+			{
+				new: true,
+			}
+		);
 
-	const options = {
-		httpOnly: true,
-		secure: true,
-	};
+		const options = {
+			httpOnly: true,
+			secure: true,
+		};
 
-	return res
-		.status(200)
-		.clearCookie("accessToken", options)
-		.clearCookie("refreshToken", options)
-		.json(new ApiResponse(200, {}, "User logged Out"));
+		return res
+			.status(200)
+			.clearCookie("accessToken", options)
+			.clearCookie("refreshToken", options)
+			.set("Location", "/login")
+			.json(new ApiResponse(200, "User logged Out"));
+	} catch (error) {
+		console.log(error.message);
+		return res.status(401).json(new ApiResponse(400, error.message));
+	}
 });
 
 //---------------------------- refreshAccessToken --------------------------//
@@ -328,6 +320,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 export {
 	registerUser,
 	loginUser,
+	tokenChecker,
 	logoutUser,
 	refreshAccessToken,
 	changeCurrentPassword,

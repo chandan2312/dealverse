@@ -3,10 +3,10 @@ import Login from "@repo/ui/pages/Login";
 
 const login = () => {
 	return (
-		<div className="max-w-md m-auto p-auto py-6">
-			<h1 className="text-2xl font-semibold py-2">Login</h1>
+		<div className=" m-auto p-auto fixed top-0 bottom-0 right-0 left-0 ">
+			{/* <h1 className="text-2xl font-semibold py-2">Login</h1> */}
 
-			<Login lang={process.env.LANGUAGE} />
+			<Login lang={process.env.LANGUAGE} server={process.env.BACKEND_URL} />
 		</div>
 	);
 };

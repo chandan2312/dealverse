@@ -83,7 +83,10 @@ const CommentCard = ({ lang, comment, className }) => {
 				</div>
 
 				<div className="py-2 px-3">
-					<div dangerouslySetInnerHTML={{ __html: comment.body }}></div>
+					<div
+						className="text-sm"
+						dangerouslySetInnerHTML={{ __html: comment.body }}
+					></div>
 				</div>
 			</CardContent>
 

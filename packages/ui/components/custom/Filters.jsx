@@ -23,7 +23,8 @@ export default function Filters({ lang, filterComponent }) {
 		<Sheet>
 			<SheetTrigger asChild>
 				<Button variant="outline" className="rounded-full">
-					<Filter /> <span className="px-1">{keywords.filters[lang]}</span>{" "}
+					<Filter />{" "}
+					<span className="px-1 max-md:hidden">{keywords.filters[lang]}</span>{" "}
 					{/* <Badge className="!bg-accent">2</Badge> */}
 				</Button>
 			</SheetTrigger>

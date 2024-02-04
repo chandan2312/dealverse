@@ -8,7 +8,15 @@ console.log;
 
 app.use(
 	cors({
-		origin: "*",
+		origin: true,
+		credentials: true,
+	})
+);
+
+app.options(
+	"*",
+	cors({
+		origin: true,
 		credentials: true,
 	})
 );

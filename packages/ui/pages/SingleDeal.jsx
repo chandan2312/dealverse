@@ -14,13 +14,14 @@ import IconAndText from "../components/custom/IconAndText";
 import { MessageSquare, Bookmark } from "lucide-react";
 
 import { keywords } from "../constants/keywords";
+import ShareToButton from "../components/custom/ShareToButton";
 
 const SingleDeal = ({ server, lang }) => {
 	console.log("Single Deal Comp");
 	console.log("Language: ", lang);
 	return (
 		<>
-			<Card className="grid grid-cols-12 mt-4 shadow-none">
+			<Card className="text-mutedText grid grid-cols-12 mt-4 shadow-none">
 				{/* ------------ Left Side -------------- */}
 				<Card className="col-span-12 md:col-span-8 shadow-none">
 					<DealInfoCard
@@ -127,11 +128,12 @@ const SingleDeal = ({ server, lang }) => {
 				</Card>
 				{/* ------------ Right Side -------------- */}
 
-				<Card className="col-span-12 md:col-span-4">
+				<aside className="col-span-12 md:col-span-4">
 					<RelatedDeals lang={lang} />
 					<TopStoreWidget lang={lang} />
 					<TopCategoriesWidget lang={lang} />
-				</Card>
+					<ShareToButton lang={lang} />
+				</aside>
 			</Card>
 		</>
 	);

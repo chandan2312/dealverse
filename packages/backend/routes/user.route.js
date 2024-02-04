@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
 	loginUser,
+	tokenChecker,
 	logoutUser,
 	registerUser,
 	refreshAccessToken,
@@ -21,9 +22,8 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 router.route("/login").post(loginUser);
-router
-	.route("/register")
-	.post(upload.fields([{ name: "avatar", maxCount: 1 }]), registerUser);
+router.route("/register").post(registerUser);
+router.route("/token-checker").post(tokenChecker);
 
 // //secured routes
 // router.route("/test").get(test);

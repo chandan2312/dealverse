@@ -22,7 +22,7 @@ import { faker } from "@faker-js/faker";
 
 import { keywords } from "../constants/keywords";
 
-const DealListingCardNarrow = ({
+const DealListCardNarrow = ({
 	lang,
 	className,
 	title,
@@ -84,7 +84,7 @@ const DealListingCardNarrow = ({
 						</div>
 					</div>
 
-					<h2 className=" font-semibold text-primary-foreground">{title}</h2>
+					<h2 className=" font-semibold text-text1">{title}</h2>
 
 					{/* ------------------- Pricing ---------------- */}
 
@@ -183,4 +183,4 @@ const DealListingCardNarrow = ({
 	);
 };
 
-export default DealListingCardNarrow;
+export default DealListCardNarrow;

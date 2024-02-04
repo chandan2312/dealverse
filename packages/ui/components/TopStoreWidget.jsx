@@ -86,7 +86,7 @@ const TopStoreWidget = ({ lang }) => {
 				<CardContent className="flex justify-center">
 					<Link
 						href="/stores"
-						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-primary-foreground"
+						className="flex items-center hover:bg-accent hover:rouded-lg p-1 text-sm text-text1"
 					>
 						<ExternalLink />
 						<span className="px-1 text-xs">{keywords.viewAllStores[lang]}</span>

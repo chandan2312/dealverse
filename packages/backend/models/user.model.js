@@ -12,6 +12,11 @@ const userSchema = new Schema(
 			trim: true,
 			index: true,
 		},
+		fullName: {
+			type: String,
+			trim: true,
+			index: true,
+		},
 		email: {
 			type: String,
 			required: [true, "Email is required"],
@@ -35,14 +40,8 @@ const userSchema = new Schema(
 		country: {
 			type: String,
 			trim: true,
-			required: true,
 		},
-		fullName: {
-			type: String,
-			required: [true, "Name is required"],
-			trim: true,
-			index: true,
-		},
+
 		bio: {
 			type: String,
 			trim: true,
@@ -59,7 +58,6 @@ const userSchema = new Schema(
 		avatar: {
 			type: String,
 			trim: true,
-			required: true,
 		},
 		totalLikes: {
 			type: Number,
@@ -97,13 +95,11 @@ const userSchema = new Schema(
 		savedDeals: {
 			type: Schema.Types.ObjectId,
 			ref: "Deal",
-			default: [],
 		},
 
 		sharedDeals: {
 			type: Schema.Types.ObjectId,
 			ref: "Deal",
-			default: [],
 		},
 	},
 

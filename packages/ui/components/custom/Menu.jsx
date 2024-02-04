@@ -55,7 +55,7 @@ import { keywords } from "../../constants/keywords.js";
 
 export function Menu({ lang }) {
 	return (
-		<NavigationMenu>
+		<NavigationMenu className="max-lg:hidden">
 			<NavigationMenuList>
 				<NavigationMenuItem>
 					<NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
