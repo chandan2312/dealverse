@@ -12,8 +12,9 @@ import {
 	CarouselNext,
 	CarouselPrevious,
 } from "../ui/carousel";
+import Image from "next/image";
 
-const ImageSlider = () => {
+const ImageSlider = ({ images }) => {
 	const plugin = React.useRef(
 		Autoplay({ delay: 2000, stopOnInteraction: true })
 	);
@@ -26,12 +27,18 @@ const ImageSlider = () => {
 			onMouseLeave={plugin.current.reset}
 		>
 			<CarouselContent>
-				{Array.from({ length: 5 }).map((_, index) => (
+				{images.map((img, index) => (
 					<CarouselItem key={index}>
 						<div className="p-1">
 							<Card>
 								<CardContent className="flex aspect-square bg-primary rounded-lg shadow-sm items-center justify-center p-6">
-									<span className="text-4xl font-semibold">{index + 1}</span>
+									<Image
+										alt={img?.fileName ? img.fileName : "image"}
+										src={img?.fileUrl}
+										width={250}
+										height={250}
+										className="rounded-2xl"
+									/>
 								</CardContent>
 							</Card>
 						</div>

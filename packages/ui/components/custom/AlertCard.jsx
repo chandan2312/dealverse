@@ -5,7 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 export default function AlertCard({
 	lang,
 	title,
-	message,
+	message = "",
 	className,
 	variant = "default",
 }) {
@@ -13,7 +13,7 @@ export default function AlertCard({
 		<Alert className={`my-4 ${className}`} variant={variant}>
 			<Terminal className={``} />
 			<AlertTitle>{title}</AlertTitle>
-			<AlertDescription>{message}</AlertDescription>
+			{message && <AlertDescription>{message}</AlertDescription>}
 		</Alert>
 	);
 }

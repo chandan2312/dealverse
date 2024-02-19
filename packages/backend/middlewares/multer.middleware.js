@@ -3,22 +3,15 @@ import { transliterate as tr, slugify } from "transliteration";
 // import sharp from "sharp";
 
 //original upload
-
 const storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		console.log("Multer Logs");
-		console.log(file);
-		console.log(req.body);
-		console.log("Multer Logs End");
-
-		cb(null, `./public/media/${file.fieldname.toLowerCase()}`);
+	destination: function (req, files, cb) {
+		cb(null, `./public/media/temp`);
 	},
-	filename: function (req, file, cb) {
-		const extension = file.mimetype.split("/")[1];
-
+	filename: function (req, files, cb) {
+		const extension = files.mimetype.split("/")[1];
 		// const uniqueSuffix = Date.now();
 
-		let filename = slugify(tr(file.originalname.split(".")[0]));
+		let filename = slugify(tr(files.originalname.split(".")[0]));
 		if (req.body.username) filename = req.body.username;
 		if (req.body.title) {
 			const randomNum = Math.floor(100000 + Math.random() * 900000);

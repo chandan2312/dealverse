@@ -2,91 +2,96 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Deal } from "../models/deal.model.js";
+import { Category } from "../models/category.model.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { transliterate as tr, slugify } from "transliteration";
+import { Tag } from "../models/tag.model.js";
+import { Comment } from "../models/comment.model.js";
 
 //--------------------------- addDeal ---------------------------//
 
 export const addDeal = asyncHandler(async (req, res, next) => {
 	const {
 		title,
-		slug,
+		link,
 		description,
-		dealPhotos,
-		type,
-		code,
+		images,
 		offer,
+		type,
+		store,
+		code,
 		discountPrice,
 		originalPrice,
-		userLink,
 		deliveryPrice,
 		expiryDate,
-		views,
-		user,
+
+		category,
+		tags,
 	} = await req.body;
 
-	const requiredFields = [
-		"title",
-		"description",
-		"discountPrice",
-		"userLink",
-		"type",
-	];
+	console.log(images);
 
-	const emptyField = requiredFields.find(
-		(field) => !field || field.trim() === ""
-	);
+	const currCategory = await Category.findById(category);
 
-	if (emptyField) {
-		throw new ApiError(400, `${emptyField} is required`);
-	}
+	const slug = `${slugify(tr(title)).slice(0, 50)}-${
+		currCategory && currCategory.slug
+	}`;
 
 	const dealByTitle = await Deal.findOne({ title });
 
 	if (dealByTitle) {
-		throw new ApiError(400, "Title already taken. Use another title");
+		return res
+			.status(200)
+			.json(new ApiResponse(500, "Title already taken. Change it"));
 	}
-	const dealGallery = req.files.dealPhotos.map((photo, index) => {
-		console.log(photo);
-		return {
-			path: `${photo.path.replace("public", "")}`,
-			size: photo.size,
-			alt: `${title} - ${index + 1}`,
-			originalName: photo.originalname,
-			type: photo.mimetype
-				.replace("image/", "")
-				.replace("video/", "")
-				.replace("audio/", ""),
-		};
-	});
+
+	const tagIds = [];
+
+	for (const tag of tags) {
+		const tg = await Tag.findOne({ name: tag });
+		if (tg) {
+			tagIds.push(tg._id);
+		} else {
+			const newTag = await Tag.create({
+				name: tag,
+				slug: slugify(tr(tag)),
+				user: req.user._id,
+			});
+			tagIds.push(newTag._id);
+		}
+	}
 
 	try {
 		const deal = await Deal.create({
 			title,
 			slug,
+			link,
 			description,
-			dealPhotos: dealGallery,
-			type,
-			code,
+			images,
 			offer,
+			type,
+			store: new mongoose.Types.ObjectId(store),
+			code,
 			discountPrice,
 			originalPrice,
-			userLink,
 			deliveryPrice,
 			expiryDate,
-			views,
-			user,
+
+			category: new mongoose.Types.ObjectId(category),
+			tags: tagIds,
+
+			user: req.user._id,
 		});
 
 		return res
-			.status(201)
-			.json(new ApiResponse(200, deal, "Deal Added Successfully"));
+			.status(200)
+			.json(new ApiResponse(200, "Deal Added Successfully", deal));
 	} catch (error) {
 		console.log(error.message);
-		return next(
-			new ApiError(500, error.message || "Something went wrong while adding Deal")
-		);
+		return res
+			.status(200)
+			.json(new ApiResponse(500, "Something went wrong", error.message));
 	}
 });
 
@@ -272,65 +277,71 @@ export const deleteDeals = asyncHandler(async (req, res, next) => {
 	}
 });
 
+async function populateNested(Model, path, doc) {
+	if (!doc[path]) {
+		return doc;
+	}
+
+	doc = await Model.populate(doc, {
+		path: path,
+		populate: {
+			path: "replies",
+			populate: {
+				path: "user",
+				select: "-password -refreshToken -ip4Address -ip6Address",
+			},
+		},
+		populate: {
+			path: "user",
+		},
+	});
+
+	const promises = doc[path].map((subDoc) =>
+		populateNested(Model, "replies", subDoc)
+	);
+	await Promise.all(promises);
+
+	return doc;
+}
+
 //--------------------------- getDeal ---------------------------//
 
 export const getDeal = asyncHandler(async (req, res, next) => {
-	const { slug, id } = await req.query;
+	const {
+		slug,
+		id,
+		includeCategory = true,
+		includeTags = true,
+		includeUser = true,
+		includeStore = true,
+		includeComments = true,
+	} = await req.body;
 
 	try {
-		const deal = await Deal.aggregate(
-			[
-				{
-					$match: {
-						...(slug && { slug }),
-						...(id && { _id: mongoose.Types.ObjectId(id) }),
-					},
-				},
-				{
-					$lookup: {
-						from: "categories",
-						localField: "categories",
-						foreignField: "_id",
-						as: "categories",
-					},
-				},
-				{
-					$lookup: {
-						from: "users",
-						localField: "user",
-						foreignField: "_id",
-						pipeline: [
-							{
-								$project: {
-									password: 0,
-									refreshToken: 0,
-									ip4Address: 0,
-									ip6Address: 0,
-								},
-							},
-						],
-						as: "user",
-					},
-				},
-				{
-					$lookup: {
-						from: "stores",
-						localField: "store",
-						foreignField: "_id",
-						as: "user",
-					},
-				},
-			].filter(Boolean)
-		);
+		const deal = await Deal.findOne({
+			...(slug && { slug }),
+			...(id && { _id: mongoose.Types.ObjectId(id) }),
+		})
+			.populate(includeStore && "store")
+			.populate(includeCategory && "category")
+			.populate(includeTags && "tags")
+			.populate(includeComments && "comments")
+			// .populate(includeComments && "comments")
+			.populate("user", "-password -refreshToken -ip4Address -ip6Address")
+			.exec();
 
-		if (!store) {
-			throw new ApiError(400, "Store not found");
+		// if (includeComments) {
+		// 	await populateNested(Deal, "comments", deal);
+		// }
+
+		if (!deal) {
+			throw new ApiError(400, "Error Finding Deal");
 		}
 
-		return res.status(200).json(new ApiResponse(200, deal, "Store is Fetched"));
+		return res.status(200).json(new ApiResponse(200, "Store is Fetched", deal));
 	} catch (error) {
 		console.log(error.message);
-		return res.status(400).json(new ApiResponse(400, null, error.message));
+		return res.status(400).json(new ApiResponse(400, error.message, error));
 	}
 });
 
@@ -348,6 +359,13 @@ export const getDealList = asyncHandler(async (req, res, next) => {
 		filterTime = "week", // day, yesterday, week, month, year
 		views = 100,
 
+		//populate
+		populateUser = true,
+		populateStore = true,
+		populateTags = true,
+		populateCategory = true,
+		populateComments = true,
+
 		//filters
 		filterStores = [],
 		filterCategories = [],
@@ -355,26 +373,7 @@ export const getDealList = asyncHandler(async (req, res, next) => {
 		filterHideExpired = false,
 		filterUser = "",
 		filterStore = "",
-
-		//includes or not
-
-		includeUserData = false,
-		includeStoreData = false,
-		includeCategoriesData = false,
-		includeCommentsData = false,
-
-		categoriesFieldsToInclude = [],
-		storeFieldsToInclude = [],
-		userFieldsToExclude = [],
-		commentFieldsToInclude = [],
-
-		categoriesCountOnly = false,
-		storeCountOnly = false,
-		userCountOnly = false,
-		commentCountOnly = false,
 	} = await req.body;
-
-	console.log(req.body);
 
 	let currentTime;
 	if (filterHideExpired) {
@@ -388,162 +387,127 @@ export const getDealList = asyncHandler(async (req, res, next) => {
 				$gte: new Date(new Date().setDate(new Date().getDate() - 1)),
 			};
 			break;
-		case "yesterday":
-			hotTabQuery = {
-				$gte: new Date(new Date().setDate(new Date().getDate() - 2)),
-				$lte: new Date(new Date().setDate(new Date().getDate() - 1)),
-			};
-			break;
-		case "week":
-			hotTabQuery = {
-				$gte: new Date(new Date().setDate(new Date().getDate() - 7)),
-			};
-			break;
-		case "month":
-			hotTabQuery = {
-				$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
-			};
-			break;
+		// ... other cases
 		default:
 			hotTabQuery = null;
 	}
 
-	const pipeline = [
-		// STAGE 1 - Match Stage
-		{
-			$match: {
-				...(filterStores.length > 0 && { store: { $in: filterStores } }),
-				...(filterCategories.length > 0 && {
-					categories: { $in: filterCategories },
-				}),
-				...(filterUser && { user: user }),
-				...(filterStore && { store: store }),
-				...(filterPriceRange.length > 0 && {
-					discountPrice: {
-						$gte: filterPriceRange[0],
-						$lte: filterPriceRange[1] ? filterPriceRange[1] : 1000000,
-					},
-				}),
-				...(filterHideExpired && { expiryDate: { $gte: currentTime } }),
-				// if there is searchTerm, then it won't filter on date
-				...(hotTab && !searchTerm && { createdAt: hotTabQuery }),
-				...(hotTab &&
-					searchTerm && {
-						createdAt: {
-							$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
-						},
-					}),
-				...(hotTab && { views: { $gte: 100 } }),
-				...(searchTerm && {
-					$or: [
-						{ title: { $regex: searchTerm, $options: "i" } },
-						{ description: { $regex: searchTerm, $options: "i" } },
-					],
-				}),
-			},
-		},
+	let query = Deal.find();
 
-		// STAGE 2 - Sort on Views (if hotTab)
-		hotTab && {
-			$sort: {
-				views: -1,
-			},
-		},
+	// ---------------- Populate --------------------
 
-		// STAGE 3 - Sort on Price (if priceRange Filter)
-		filterPriceRange.length && {
-			$sort: {
-				discountPrice: sortOrder === "desc" ? -1 : 1,
-			},
-		},
+	if (populateUser) {
+		query = query.populate("user");
+	}
 
-		// STAGE 4 - project fields if the array is not empty
+	if (populateStore) {
+		query = query.populate("store");
+	}
 
-		fieldsToInclude.length && {
-			$project: {
-				_id: 1,
-				...(fieldsToInclude.includes("title") && { title: 1 }),
-				...(fieldsToInclude.includes("slug") && { slug: 1 }),
-				...(fieldsToInclude.includes("description") && { description: 1 }),
-				...(fieldsToInclude.includes("dealPhotos") && { dealPhotos: 1 }),
-				...(fieldsToInclude.includes("views") && { views: 1 }),
-				...(fieldsToInclude.includes("discountPrice") && { discountPrice: 1 }),
-				...(fieldsToInclude.includes("originalPrice") && { originalPrice: 1 }),
-				...(fieldsToInclude.includes("userLink") && { userLink: 1 }),
-				...(fieldsToInclude.includes("affiliateLink") && { affiliateLink: 1 }),
-				...(fieldsToInclude.includes("deliveryPrice") && { deliveryPrice: 1 }),
-				...(fieldsToInclude.includes("expiryDate") && { expiryDate: 1 }),
-				...(fieldsToInclude.includes("upVotes") && { upVotes: 1 }),
-				...(fieldsToInclude.includes("status") && { status: 1 }),
-				...(fieldsToInclude.includes("createdAt") && { createdAt: 1 }),
-				...(fieldsToInclude.includes("updatedAt") && { updatedAt: 1 }),
+	if (populateTags) {
+		query = query.populate("tags");
+	}
 
-				//relational fields
+	if (populateCategory) {
+		query = query.populate("category");
+	}
 
-				...(fieldsToInclude.includes("store") && { store: 1 }),
-				...(fieldsToInclude.includes("categories") && { categories: 1 }),
-				...(fieldsToInclude.includes("user") && { user: 1 }),
-				...(fieldsToInclude.includes("comments") && { comments: 1 }),
-			},
-		},
+	if (populateComments) {
+		query = query.populate("comments");
+	}
 
-		// STAGE 5 - Lookup Store (if include...Data variable is true)
+	// ---------------- Filter --------------------
 
-		includeStoreData &&
-			!storeCountOnly && {
-				$lookup: {
-					from: "stores",
-					localField: "store",
-					foreignField: "_id",
-					as: "store",
-				},
-			},
+	if (filterStores.length > 0) {
+		query = query.where("store").in(filterStores);
+	}
 
-		includeCategoriesData &&
-			!categoriesCountOnly && {
-				$lookup: {
-					from: "categories",
-					localField: "categories",
-					foreignField: "_id",
-					as: "categories",
-				},
-			},
+	if (filterCategories.length > 0) {
+		query = query.where("categories").in(filterCategories);
+	}
 
-		includeUserData &&
-			!userCountOnly && {
-				$lookup: {
-					from: "users",
-					localField: "user",
-					foreignField: "_id",
-					pipeline: [
-						{
-							$project: {
-								password: 0,
-								refreshToken: 0,
-								ip4Address: 0,
-								ip6Address: 0,
-							},
-						},
-					],
+	if (filterUser) {
+		query = query.where("user", user);
+	}
 
-					as: "user",
-				},
-			},
+	if (filterStore) {
+		query = query.where("store", store);
+	}
 
-		includeCommentsData &&
-			!commentCountOnly && {
-				$lookup: {
-					from: "comments",
-					localField: "comments",
-					foreignField: "_id",
-					as: "comments",
-				},
-			},
+	if (filterPriceRange.length > 0) {
+		query = query
+			.where("discountPrice")
+			.gte(filterPriceRange[0])
+			.lte(filterPriceRange[1] ? filterPriceRange[1] : 1000000);
+	}
 
-		// STAGE 6 - Counts Only  (if ...CountOnly true)
-	];
+	if (filterHideExpired) {
+		query = query.where("expiryDate").gte(currentTime);
+	}
 
-	const deals = await Deal.aggregate(pipeline.filter(Boolean));
+	if (hotTab && !searchTerm) {
+		query = query.where("createdAt", hotTabQuery);
+	}
 
-	return res.status(200).json(new ApiResponse(200, deals, "Deal is Fetched"));
+	if (hotTab && searchTerm) {
+		query = query
+			.where("createdAt")
+			.gte(new Date(new Date().setDate(new Date().getDate() - 30)));
+	}
+
+	if (hotTab) {
+		query = query.where("views").gte(100);
+	}
+
+	if (searchTerm) {
+		query = query.or([
+			{ title: new RegExp(searchTerm, "i") },
+			{ description: new RegExp(searchTerm, "i") },
+		]);
+	}
+
+	if (hotTab) {
+		query = query.sort({ views: -1 });
+	}
+
+	if (filterPriceRange.length) {
+		query = query.sort({ discountPrice: sortOrder === "desc" ? -1 : 1 });
+	}
+
+	if (fieldsToInclude.length) {
+		let projection = {};
+		fieldsToInclude.forEach((field) => (projection[field] = 1));
+		query = query.select(projection);
+	}
+
+	const deals = await query.exec();
+
+	return res.status(200).json(new ApiResponse(200, "Deals are fetched", deals));
+});
+
+export const getDealComments = asyncHandler(async (req, res, next) => {
+	const {
+		dealId,
+		slug,
+		page = 1,
+		limit = 10,
+		sortBy = "createdAt",
+		sortOrder = "asc",
+	} = await req.body;
+
+	try {
+		const deal = await Deal.findOne({
+			...(slug && { slug }),
+			...(dealId && { _id: mongoose.Types.ObjectId(dealId) }),
+		}).populate("comments");
+
+		await populateNested(Deal, "comments", deal);
+
+		return res
+			.status(200)
+			.json(new ApiResponse(200, "Comments are fetched", deal.comments));
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).json(new ApiResponse(500, error.message, error));
+	}
 });

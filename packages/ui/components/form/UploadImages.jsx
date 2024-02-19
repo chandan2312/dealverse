@@ -1,127 +1,219 @@
+"use client";
+
 import React from "react";
+import { Input } from "../ui/input";
+import { useState } from "react";
+import AlertCard from "../custom/AlertCard";
+import { Button } from "../ui/button";
+import axios from "axios";
+import { keywords } from "../../constants/keywords";
+import { Trash2 } from "lucide-react";
+import { Image } from "lucide-react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addImage } from "../../store/slices/formSlice";
+import { Upload } from "lucide-react";
+import { Loader } from "lucide-react";
 
-const UploadImages = () => {
+const UploadImages = ({ handleImages, lang, server }) => {
+	const [localImages, setLocalImages] = useState([]);
+	const [isUploading, setIsUploading] = useState(false);
+	const [externalImageUrl, setExternalImageUrl] = useState("");
+	const uploadedImages = useSelector((state) => state.form.images);
+
+	const [uploadedProgress, setUploadedProgress] = useState(0);
+
+	const dispatch = useDispatch();
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		const files = document.getElementById("files");
+
+		console.log(files);
+
+		const formData = new FormData();
+		for (let i = 0; i < files.files.length; i++) {
+			formData.append("files", files.files[i]);
+		}
+		formData.append("folder", "india");
+		formData.append("subfolder", "temp");
+
+		setIsUploading(true);
+
+		const res = await axios.post(`${server}/api/v1/media/add-images`, formData, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+
+		const response = res.data;
+		if (response.statusCode === 200) {
+			dispatch(addImage(...response.data));
+			handleImages([...uploadedImages, ...response.data]);
+		}
+
+		setIsUploading(false);
+	};
+
+	const handleUploadByUrl = async (e) => {
+		e.preventDefault();
+
+		setIsUploading(true);
+
+		const res = await axios.post(`${server}/api/v1/media/add-images-by-urls`, {
+			imagesByUrls: [externalImageUrl],
+			folder: "india",
+			subfolder: "temp",
+		});
+
+		const response = res.data;
+		if (response.statusCode === 200) {
+			console.log(response.data);
+			dispatch(addImage(...response.data));
+		}
+
+		setExternalImageUrl("");
+		setIsUploading(false);
+	};
+
+	const handleDeleteImage = async (image) => {
+		const selectedImg = uploadedImages.find(
+			(img) => img.fileUrl === image.fileUrl
+		);
+		const newImages = uploadedImages.filter(
+			(img) => img.fileUrl !== image.fileUrl
+		);
+		const res = await axios.post(`${server}/api/v1/media/delete-image`, {
+			fileUrl: selectedImg.fileUrl,
+		});
+
+		const response = res.data;
+		if (response.statusCode === 200) {
+			dispatch(deleteImage(selectedImg.fileUrl));
+		}
+	};
+
+	console.log("uploadedImages");
+	console.log(uploadedImages);
+
 	return (
-		<div className="flex items-center justify-center p-12 ">
-			<div className="mx-auto w-full max-w-[550px] bg-white">
-				<form
-					className="py-6 px-9"
-					action="https://formbold.com/s/FORM_ID"
-					method="POST"
-				>
-					<div className="mb-5">
-						<label
-							for="email"
-							className="mb-3 block text-base font-medium text-[#07074D]"
-						>
-							Upload by url
-						</label>
-						<input
-							type="email"
-							name="email"
-							id="email"
-							placeholder="Enter Image Url to Upload"
-							className="w-full rounded-md border border-[#e0e0e0] bg-white p-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-						/>
-					</div>
-
-					<div className="mb-6 pt-4">
-						<label className="mb-5 block text-xl font-semibold text-[#07074D]">
-							Upload File
-						</label>
-
-						<div className="mb-8">
-							<input type="file" name="file" id="file" className="sr-only" />
-							<label
-								for="file"
-								className="relative flex min-h-[200px] items-center justify-center rounded-md border border-dashed border-[#e0e0e0] p-12 text-center"
-							>
-								<div>
-									<span className="mb-2 block text-xl font-semibold text-[#07074D]">
-										Drop files here
-									</span>
-									<span className="mb-2 block text-base font-medium text-[#6B7280]">
-										Or
-									</span>
-									<span className="inline-flex rounded border border-[#e0e0e0] py-2 px-7 text-base font-medium text-[#07074D]">
-										Browse
-									</span>
-								</div>
-							</label>
-						</div>
-
-						<div className="mb-5 rounded-md bg-accent1 py-4 px-8">
-							<div className="flex items-center justify-between">
-								<span className="truncate pr-3 text-base font-medium text-[#07074D]">
-									banner-design.png
-								</span>
-								<button className="text-[#07074D]">
-									<svg
-										width="10"
-										height="10"
-										viewBox="0 0 10 10"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path
-											fill-rule="evenodd"
-											clip-rule="evenodd"
-											d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
-											fill="currentColor"
-										/>
-										<path
-											fill-rule="evenodd"
-											clip-rule="evenodd"
-											d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
-											fill="currentColor"
-										/>
-									</svg>
-								</button>
-							</div>
-						</div>
-
-						<div className="rounded-md bg-[#F5F7FB] py-4 px-8">
-							<div className="flex items-center justify-between">
-								<span className="truncate pr-3 text-base font-medium text-[#07074D]">
-									banner-design.png
-								</span>
-								<button className="text-[#07074D]">
-									<svg
-										width="10"
-										height="10"
-										viewBox="0 0 10 10"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-									>
-										<path
-											fill-rule="evenodd"
-											clip-rule="evenodd"
-											d="M0.279337 0.279338C0.651787 -0.0931121 1.25565 -0.0931121 1.6281 0.279338L9.72066 8.3719C10.0931 8.74435 10.0931 9.34821 9.72066 9.72066C9.34821 10.0931 8.74435 10.0931 8.3719 9.72066L0.279337 1.6281C-0.0931125 1.25565 -0.0931125 0.651788 0.279337 0.279338Z"
-											fill="currentColor"
-										/>
-										<path
-											fill-rule="evenodd"
-											clip-rule="evenodd"
-											d="M0.279337 9.72066C-0.0931125 9.34821 -0.0931125 8.74435 0.279337 8.3719L8.3719 0.279338C8.74435 -0.0931127 9.34821 -0.0931123 9.72066 0.279338C10.0931 0.651787 10.0931 1.25565 9.72066 1.6281L1.6281 9.72066C1.25565 10.0931 0.651787 10.0931 0.279337 9.72066Z"
-											fill="currentColor"
-										/>
-									</svg>
-								</button>
-							</div>
-							<div className="relative mt-5 h-[6px] w-full rounded-lg bg-[#E2E5EF]">
-								<div className="absolute left-0 right-0 h-full w-[75%] rounded-lg bg-[#6A64F1]"></div>
-							</div>
-						</div>
-					</div>
-
-					<div>
-						<button className="hover:shadow-form w-full rounded-md bg-[#6A64F1] py-3 px-8 text-center text-base font-semibold text-white outline-none">
-							Send File
-						</button>
-					</div>
-				</form>
+		<>
+			<div className="pt-4 font-semibold text-left  ">
+				<Image />
+				Upload Files
 			</div>
-		</div>
+
+			<div className=" bg-primary shadow-lg  p-2 border-2 my-4 md:mx-4 rounded-2xl">
+				<div className=" w-full max-w-[550px] ">
+					<form id="form" className="py-3 px-2" method="POST">
+						{/* ------------------------------ By Files -------------------------- */}
+
+						<div className="">
+							<label className="block text-sm py-2  text-left ">File(s)</label>
+							<div className="mb-3 grid-cols-12">
+								<input
+									accept=".png, .jpg, .jpeg, .webp, .svg"
+									multiple={true}
+									type="file"
+									name="files"
+									id="files"
+									className="col-span-9 w-64"
+									onChange={(e) => {
+										setLocalImages([...localImages, e.target.files]);
+									}}
+								/>
+
+								<Button
+									onClick={handleSubmit}
+									className={`col-span-2 hover:shadow-form px-1 rounded-md ${
+										isUploading ? "bg-accent2" : "bg-accent"
+									} px-2 text-center text-base font-semibold text-accent-foreground outline-none`}
+								>
+									{isUploading ? <Loader /> : <Upload />}
+								</Button>
+							</div>
+						</div>
+
+						{/* ------------------------------ By URL -------------------------- */}
+
+						<div className="mb-2">
+							<label for="email" className="text-sm py-2 block text-left">
+								By URL
+							</label>
+
+							<div className="flex gap-1">
+								<Input
+									type="text"
+									name="url"
+									id="url"
+									placeholder="https://example.com/image.png"
+									onChange={(e) => setExternalImageUrl(e.target.value)}
+									value={externalImageUrl}
+									readOnly={isUploading}
+									className="h-8"
+								/>
+								<Button
+									size="sm"
+									onClick={handleUploadByUrl}
+									disabled={!externalImageUrl || !externalImageUrl.trim()}
+									className="h-8 ml-2"
+								>
+									{isUploading ? <Loader /> : <Upload />}
+								</Button>
+							</div>
+						</div>
+
+						{/* ------------------------------  PREVIEW -------------------------- */}
+						<div className="flex gap-2 flex-wrap">
+							{uploadedImages.map((image, index) => {
+								return (
+									<div
+										key={index}
+										className="relative border p-2 rounded-lg w-24 h-24 md:col-span-3 lg:col-span-2 object-cover"
+									>
+										<div
+											onClick={() => handleDeleteImage(image)}
+											className="absolute top-1 right-1 cursor-pointer"
+										>
+											<Trash2 />
+										</div>
+										<img
+											src={image.fileUrl}
+											title={image.fileName}
+											alt={image.fileName}
+											className="object-cover rounded-md"
+										/>
+
+										<div>
+											<span className="line-clamp-1 text-sm w-full text-center overflow-x-hidden">
+												{image.fileName}
+											</span>
+											<span className="text-sm font-semibold block py-1 w-full text-center overflow-x-hidden">
+												{image.fileSize}
+											</span>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+
+						{uploadedImages.length + localImages.length > 6 && (
+							<AlertCard
+								title="Limit Exceeded"
+								variant="destructive"
+								message="You can only upload 6 files at Most. Please try again."
+							/>
+						)}
+					</form>
+				</div>
+			</div>
+
+			{/* <div className='py-3'>
+
+.
+			</div> */}
+		</>
 	);
 };
 

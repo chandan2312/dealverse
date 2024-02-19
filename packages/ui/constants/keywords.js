@@ -182,10 +182,26 @@ export const keywords = {
 		en: "Search",
 		kr: "검색",
 	},
+	bestRegards: {
+		en: "Best Regards",
+		kr: "최고의 인사",
+	},
 	//--------------------------------------------------------- action & options
 	saveLater: {
 		en: "Save for later",
 		kr: "나중에 저장",
+	},
+	clickHere: {
+		en: "Click here",
+		kr: "여기를 클릭하세요",
+	},
+	somethingWentWrong: {
+		en: "Something went wrong",
+		kr: "문제가 발생했습니다",
+	},
+	saved: {
+		en: "Saved",
+		kr: "저장됨",
 	},
 	sortBy: {
 		en: "Sort by",
@@ -334,6 +350,10 @@ export const keywords = {
 		en: "Enter your email",
 		kr: "이메일을 입력하세요",
 	},
+	emailSentWithOldUsernamePassword: {
+		en: "An email sent with old username and password",
+		kr: "이전 사용자 이름과 비밀번호가 포함된 이메일이 귀하의 이메일 주소로 전송되었습니다",
+	},
 
 	enterYourPassword: {
 		en: "Enter your password",
@@ -395,9 +415,18 @@ export const keywords = {
 		en: "Confirmation email sent",
 		kr: "확인 이메일 전송됨",
 	},
+	verifyYourAccount: {
+		en: "Verify Your Account",
+		kr: "계정 확인",
+	},
+
 	sentVerificationEmail: {
 		en: "We have sent a verification email to your email address",
 		kr: "확인 이메일을 귀하의 이메일 주소로 보냈습니다",
+	},
+	verificationCodeSentToEmail: {
+		en: "Verification code sent to your email",
+		kr: "귀하의 이메일로 확인 코드가 전송되었습니다",
 	},
 
 	//--------------------------------------------------------- others

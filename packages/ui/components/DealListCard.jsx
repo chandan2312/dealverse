@@ -3,6 +3,8 @@ import { Card, CardContent } from "./ui/card";
 import { Separator } from "./ui/separator";
 import UpVoteButton from "./custom/UpVoteButton";
 import UserInfoCard from "./custom/UserInfoCard";
+import StoreWrapper from "./wrapper/StoreWrapper";
+import { faker } from "@faker-js/faker";
 
 import { Button } from "./ui/button";
 import {
@@ -18,22 +20,17 @@ import {
 } from "lucide-react";
 import { Input } from "./ui/input";
 
-import { faker } from "@faker-js/faker";
-
 import { keywords } from "../constants/keywords";
+import CouponButton from "./custom/CouponButton";
+import Image from "next/image";
+import Link from "next/link";
 
-const DealListCard = ({
-	lang,
-	className,
-	title,
-	description,
-	category,
-	...props
-}) => {
+const DealListCard = ({ lang, server, className, deal }) => {
 	return (
 		<Card
-			className={`${className} relative
-			 shadow-md p-1 lg:p-3 bg-primary mx-1 my-3 h-[250px]`}
+			key={deal._id}
+			className={`${className} w-full relative
+			 shadow-md p-1 lg:p-3 bg-primary mx-1 my-3`}
 		>
 			<div className="ribbon-wrapper-green">
 				<div className="ribbon-green">
@@ -43,39 +40,54 @@ const DealListCard = ({
 
 			<CardContent className="p-0 flex items-center gap-3">
 				<div className="w-36 h-36 bg-secondary rounded-md flex flex-col justify-center items-center overflow-hidden">
-					<img
-						src={props.coverImage}
-						alt="deal"
+					<Image
+						src={
+							deal?.images.length
+								? deal.images[0].fileUrl
+								: deal?.store?.logo
+									? deal.store.logo
+									: faker.image.nature()
+						}
+						alt={`${deal.title} image`}
+						width={32}
+						height={32}
 						className="w-auto h-auto m-auto p-auto object-cover p-1 "
 					/>
 				</div>
 				<div className="w-full relative">
 					<div className="flex mt-2 items-center justify-between">
 						<div className="flex items-center gap-1 text-xs ">
-							<UpVoteButton upVote={10} />
+							<StoreWrapper>
+								<UpVoteButton upVote={deal?.upVotes || 0} />
+							</StoreWrapper>
 
 							<Separator orientation="vertical" />
 
-							<a href={props.storeLink} className="flex items-center ">
+							<Link
+								href={`/store/${deal?.store?.slug}`}
+								className="flex items-center "
+							>
 								<span className="px-1">
-									<img
-										src={faker.image.avatar()}
-										alt="avatar"
-										className="w-4 h-4 rounded-full"
+									<Image
+										src={deal?.store?.logo || faker.image.avatar()}
+										alt={deal?.store?.name || "store"}
+										width={8}
+										height={8}
+										className=" rounded-full"
 									/>
 								</span>
-								<span className="text-slate-400 ">{props.storeName}</span>
-							</a>
+								<span className="text-slate-400 ">{deal?.store?.name}</span>
+							</Link>
 
 							<Separator orientation="vertical" />
 
-							{category?.name ? (
-								<a href={`/${category.slug}`} className="flex items-center ">
-									<span className="px-1">{category.icon ? category.icon : ""}</span>
-									<span className="text-slate-400 ">
-										{keywords[category.slug][lang]}
+							{deal?.category?.name ? (
+								<Link href={`/${deal.category.slug}`} className="flex items-center ">
+									<span className="px-1">
+										{deal?.category?.icon ? deal.category.icon : ""}
 									</span>
-								</a>
+									<span className="text-slate-400 ">{deal.category.slug}</span>
+								</Link>
 							) : (
 								""
 							)}
@@ -83,28 +95,30 @@ const DealListCard = ({
 					</div>
 
 					<h2 className="text-xl max-md:text-lg font-semibold text-text1">
-						{title}
+						<Link href={`/deal/${deal.slug}`}>{deal.title}</Link>
 					</h2>
-					<p className="text-sm text-text1">{description}</p>
+					{/* <p className="text-sm text-text1">{description}</p> */}
 
 					{/* ------------------- Pricing ---------------- */}
 
 					<Card className="flex bg-transparent shadow-none items-center gap-2 text-sm pt-2">
-						<div>
-							<span className="font-semibold text-green-500 pl-1 ">
-								{props.currency}
-							</span>
-							<span className=" text-green-500 ">{props.discountPrice}</span>
-						</div>
+						{deal?.discountPrice && (
+							<div>
+								<span className="font-semibold text-green-500 pl-1 ">
+									{keywords.currency[lang]}
+								</span>
+								<span className=" text-green-500 ">{deal.discountPrice}</span>
+							</div>
+						)}
 
 						<Separator orientation="vertical" />
 
-						{props.deliveryPrice ? (
+						{deal?.deliveryPrice ? (
 							<div className="text-slate-400 flex items-center gap-1">
 								<span>
 									<Truck />
 								</span>
-								<span className="">{props.deliveryPrice}</span>
+								<span className="">{deal.deliveryPrice}</span>
 							</div>
 						) : (
 							<div className="text-slate-400 flex items-center">
@@ -120,52 +134,56 @@ const DealListCard = ({
 
 						<Separator orientation="vertical" />
 
-						<a href={props.userAvatar} className="flex gap-1 items-center text-xs">
+						<a
+							href={`/user/${deal.user.username}`}
+							className="flex gap-1 items-center text-xs"
+						>
 							<span>
-								<img
-									src={faker.image.avatar()}
-									alt="avatar"
+								<Image
+									src={deal.user?.avatar || faker.image.avatar()}
+									alt={deal.user.username}
+									width={8}
+									height={8}
 									className="w-4 h-4 rounded-full"
 								/>
 							</span>
-							<span className="text-slate-400 ">{props.username}</span>
+							<span className="text-slate-400 ">{deal.username}</span>
 						</a>
 					</Card>
 
 					<Card className="flex bg-transparent shadow-none justify-end items-center gap-2 text-sm mt-2 ">
 						{/* ----------------------- Buttons --------------------- */}
 
-						{props.type === "coupon" ? (
-							<div className="ml-auto pl-auto flex justify-end">
-								<form action="" className=" flex items-center flex-end justify-end">
-									<Button
-										size="sm"
-										variant="overlay"
-										className="px-2  hover:bg-accent absolute right-90 "
-										type="submit"
-									>
-										<Copy />{" "}
-									</Button>
-									<Input
-										readOnly
-										className="mx-1 text-center font-semibold pr-9"
-										value={props.couponCode}
-									></Input>
-								</form>
-							</div>
+						{deal.type == "Coupon" ? (
+							<CouponButton
+								lang={lang}
+								data={{
+									className: "rounded-l-full ",
+									variant: "secondary",
+									size: "sm",
+									text: keywords.viewCoupon[lang],
+								}}
+								deal={{
+									code: deal.code,
+								}}
+							/>
 						) : (
 							""
 						)}
 
-						<Button className="bg-accent rounded-2xl text-sm" size="sm">
-							{props.type === "coupon" ? <TicketPercent /> : <Tag />}
+						{deal.type === "Deal" ? (
+							<Button className="px-8 mr-2 bg-accent  rounded-full text-sm" size="sm">
+								{deal.type === "Coupon" ? <TicketPercent /> : <Tag />}
 
-							<span className="px-1">
-								{props.type === "coupon"
-									? keywords.grabCoupon[lang]
-									: keywords.getDeal[lang]}
-							</span>
-						</Button>
+								<span className="px-1">
+									{deal.type === "Coupon"
+										? keywords.grabCoupon[lang]
+										: keywords.getDeal[lang]}
+								</span>
+							</Button>
+						) : (
+							""
+						)}
 
 						<Button size="sm" variant="outline" className="rounded-full">
 							<Bookmark />

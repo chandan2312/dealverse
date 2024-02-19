@@ -13,7 +13,7 @@ const isBanned = asyncHandler(async (req, res, next) => {
 			throw new ApiError(401, "Unauthorized request");
 		}
 
-		const decodedToken = jwt.verify(token, "chax123");
+		const decodedToken = jwt.verify(token, process.env.COOKIE_SECRET);
 
 		const user = await User.findById(decodedToken?._id).select(
 			"-password -refreshToken"

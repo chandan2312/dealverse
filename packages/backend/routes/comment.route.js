@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
 	addComment,
 	editComment,
-	deleteComment,
+	deleteComments,
 	getComment,
 	getCommentList,
 } from "../controllers/comment.controller.js";
@@ -16,8 +16,8 @@ router.route("/get-comment-list").post(getCommentList);
 
 //secured Routes
 
-router.route("/add-coupon").post(verifyJWT, addComment);
+router.route("/add-comment").post(verifyJWT, addComment);
 router.route("/edit-comment").post(verifyJWT, editComment);
-router.route("/delete-comment").post(verifyJWT, deleteComment);
+router.route("/delete-comments").post(verifyJWT, deleteComments);
 
 export default router;

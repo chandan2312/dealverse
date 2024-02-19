@@ -5,10 +5,10 @@ import Navbar from "../Navbar.jsx";
 import { Provider } from "react-redux";
 import { store } from "../../store/index.js";
 
-const NavbarWrapper = ({ lang }) => {
+const NavbarWrapper = ({ lang, server }) => {
 	return (
 		<Provider store={store}>
-			<Navbar lang={lang} />
+			<Navbar lang={lang} server={server} />
 		</Provider>
 	);
 };

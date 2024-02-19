@@ -28,6 +28,18 @@ const userSchema = new Schema(
 			type: Boolean,
 			default: false,
 		},
+		verificationCode: {
+			code: {
+				type: Number,
+				trim: true,
+				max: 99999,
+				min: 10000,
+			},
+			createdAt: {
+				type: Date,
+				default: Date.now,
+			},
+		},
 		ip4Address: {
 			type: String,
 			trim: true,
@@ -49,8 +61,12 @@ const userSchema = new Schema(
 		},
 		password: {
 			type: String,
-			required: [true, "Password is required"],
 			min: 6,
+		},
+		method: {
+			type: String,
+			enum: ["EMAIL", "GOOGLE"],
+			default: "EMAIL",
 		},
 		refreshToken: {
 			type: String,
@@ -63,6 +79,47 @@ const userSchema = new Schema(
 			type: Number,
 			default: 0,
 		},
+		plan: {
+			type: {
+				type: String,
+				enum: ["FREE", "PREMIUM", "ULTIMATE"],
+				default: "FREE",
+			},
+			expiryDate: {
+				type: Date,
+			},
+			createAt: {
+				type: Date,
+				default: Date.now,
+			},
+		},
+
+		payments: [
+			{
+				amount: {
+					type: Number,
+					default: 0,
+				},
+				paymentId: {
+					type: String,
+					trim: true,
+				},
+				paymentMethod: {
+					type: String,
+					enum: ["STRIPE", "PAYPAL"],
+					trim: true,
+				},
+				status: {
+					type: String,
+					enum: ["PENDING", "SUCCESS", "FAILED"],
+					default: "PENDING",
+				},
+				createdAt: {
+					type: Date,
+					default: Date.now,
+				},
+			},
+		],
 		role: {
 			type: String,
 			enum: ["user", "admin", "writer", "moderator", "robot"],
@@ -92,10 +149,25 @@ const userSchema = new Schema(
 
 		// Relational Fields
 
-		savedDeals: {
-			type: Schema.Types.ObjectId,
-			ref: "Deal",
-		},
+		votedDeals: [
+			{
+				dealId: {
+					type: Schema.Types.ObjectId,
+					ref: "Deal",
+				},
+				voteType: {
+					type: String,
+					enum: ["up", "down"],
+				},
+			},
+		],
+
+		savedDeals: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Deal",
+			},
+		],
 
 		sharedDeals: {
 			type: Schema.Types.ObjectId,
@@ -125,9 +197,8 @@ userSchema.methods.generateAccessToken = function () {
 			_id: this._id,
 			email: this.email,
 			username: this.username,
-			fullName: this.fullName,
 		},
-		"chax123",
+		process.env.COOKIE_SECRET,
 		{
 			expiresIn: "1d",
 		}
@@ -139,7 +210,7 @@ userSchema.methods.generateRefreshToken = function () {
 		{
 			_id: this._id,
 		},
-		"chax123",
+		process.env.COOKIE_SECRET,
 		{
 			expiresIn: "7d",
 		}

@@ -1,0 +1,184 @@
+	console.log(req.body);
+
+	let currentTime;
+	if (filterHideExpired) {
+		currentTime = new Date();
+	}
+
+	let hotTabQuery;
+	switch (filterTime) {
+		case "day":
+			hotTabQuery = {
+				$gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+			};
+			break;
+		case "yesterday":
+			hotTabQuery = {
+				$gte: new Date(new Date().setDate(new Date().getDate() - 2)),
+				$lte: new Date(new Date().setDate(new Date().getDate() - 1)),
+			};
+			break;
+		case "week":
+			hotTabQuery = {
+				$gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+			};
+			break;
+		case "month":
+			hotTabQuery = {
+				$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+			};
+			break;
+		default:
+			hotTabQuery = null;
+	}
+
+	const pipeline = [
+		// STAGE 1 - Match Stage
+		{
+			$match: {
+				...(filterStores.length > 0 && { store: { $in: filterStores } }),
+				...(filterCategories.length > 0 && {
+					categories: { $in: filterCategories },
+				}),
+				...(filterUser && { user: user }),
+				...(filterStore && { store: store }),
+				...(filterPriceRange.length > 0 && {
+					discountPrice: {
+						$gte: filterPriceRange[0],
+						$lte: filterPriceRange[1] ? filterPriceRange[1] : 1000000,
+					},
+				}),
+				...(filterHideExpired && { expiryDate: { $gte: currentTime } }),
+				// if there is searchTerm, then it won't filter on date
+				...(hotTab && !searchTerm && { createdAt: hotTabQuery }),
+				...(hotTab &&
+					searchTerm && {
+						createdAt: {
+							$gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+						},
+					}),
+				...(hotTab && { views: { $gte: 100 } }),
+				...(searchTerm && {
+					$or: [
+						{ title: { $regex: searchTerm, $options: "i" } },
+						{ description: { $regex: searchTerm, $options: "i" } },
+					],
+				}),
+			},
+		},
+
+		// STAGE 2 - Sort on Views (if hotTab)
+		hotTab && {
+			$sort: {
+				views: -1,
+			},
+		},
+
+		// STAGE 3 - Sort on Price (if priceRange Filter)
+		filterPriceRange.length && {
+			$sort: {
+				discountPrice: sortOrder === "desc" ? -1 : 1,
+			},
+		},
+
+		// STAGE 4 - project fields if the array is not empty
+
+		fieldsToInclude.length && {
+			$project: {
+				_id: 1,
+				...(fieldsToInclude.includes("title") && { title: 1 }),
+				...(fieldsToInclude.includes("slug") && { slug: 1 }),
+				...(fieldsToInclude.includes("description") && { description: 1 }),
+				...(fieldsToInclude.includes("dealPhotos") && { dealPhotos: 1 }),
+				...(fieldsToInclude.includes("views") && { views: 1 }),
+				...(fieldsToInclude.includes("discountPrice") && { discountPrice: 1 }),
+				...(fieldsToInclude.includes("originalPrice") && { originalPrice: 1 }),
+				...(fieldsToInclude.includes("userLink") && { userLink: 1 }),
+				...(fieldsToInclude.includes("affiliateLink") && { affiliateLink: 1 }),
+				...(fieldsToInclude.includes("deliveryPrice") && { deliveryPrice: 1 }),
+				...(fieldsToInclude.includes("expiryDate") && { expiryDate: 1 }),
+				...(fieldsToInclude.includes("upVotes") && { upVotes: 1 }),
+				...(fieldsToInclude.includes("status") && { status: 1 }),
+				...(fieldsToInclude.includes("createdAt") && { createdAt: 1 }),
+				...(fieldsToInclude.includes("updatedAt") && { updatedAt: 1 }),
+
+				//relational fields
+
+				...(fieldsToInclude.includes("store") && { store: 1 }),
+				...(fieldsToInclude.includes("categories") && { categories: 1 }),
+				...(fieldsToInclude.includes("user") && { user: 1 }),
+				...(fieldsToInclude.includes("comments") && { comments: 1 }),
+			},
+		},
+
+		// STAGE 5 - Lookup Store (if include...Data variable is true)
+
+		includeStoreData &&
+			!storeCountOnly && {
+				$lookup: {
+					from: "stores",
+					localField: "store",
+					foreignField: "_id",
+					as: "store",
+				},
+			},
+
+		includeCategoriesData &&
+			!categoriesCountOnly && {
+				$lookup: {
+					from: "categories",
+					localField: "categories",
+					foreignField: "_id",
+					as: "categories",
+				},
+			},
+
+		includeUserData &&
+			!userCountOnly && {
+				$lookup: {
+					from: "users",
+					localField: "user",
+					foreignField: "_id",
+					pipeline: [
+						{
+							$project: {
+								password: 0,
+								refreshToken: 0,
+								ip4Address: 0,
+								ip6Address: 0,
+							},
+						},
+					],
+
+					as: "user",
+				},
+			},
+
+		includeCommentsData &&
+			!commentCountOnly && {
+				$lookup: {
+					from: "comments",
+					localField: "comments",
+					foreignField: "_id",
+					as: "comments",
+				},
+			},
+
+		// STAGE 6 - Counts Only  (if ...CountOnly true)
+	];
+
+	const deals = await Deal.aggregate(pipeline.filter(Boolean));
+
+
+
+
+
+
+
+
+
+
+
+
+
+   🚨🚨🚨🚨🚨🚨

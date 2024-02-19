@@ -8,7 +8,7 @@ import { cn } from "../utils";
 import { keywords } from "../constants/keywords";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import axios from "axios";
 import tokenChecker from "../helpers/tokenChecker";
 
@@ -20,7 +20,7 @@ export const metadata = {
 export default function Login({ lang, server }) {
 	const [loading, setLoading] = useState(true);
 
-	const router = useRouter();
+	// const router = useRouter();
 	useEffect(() => {
 		const checker = async () => {
 			const token = await tokenChecker(server);

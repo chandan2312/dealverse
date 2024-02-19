@@ -17,15 +17,13 @@ const dealSchema = new Schema(
 		},
 		description: {
 			type: String,
-			required: [true, "Description is required"],
 			trim: true,
 		},
-		dealPhotos: [
+		images: [
 			{
-				path: { type: String, required: true },
-				size: { type: Number, required: true },
-				alt: { type: String },
-				originalName: { type: String },
+				fileName: { type: String },
+				fileUrl: { type: String, required: true },
+				fileSize: { type: Number },
 			},
 		],
 		type: {
@@ -50,21 +48,42 @@ const dealSchema = new Schema(
 		},
 		discountPrice: {
 			type: Number,
-			required: [true, "Offer Price is required"],
 			trim: true,
 		},
 		originalPrice: {
 			type: Number,
 			trim: true,
 		},
-		userLink: {
+		link: {
 			type: String,
 			required: [true, "Link is required (Offer Page Link)"],
 			trim: true,
 		},
+		linkCount: {
+			type: Number,
+			default: 0,
+		},
 		affiliateLink: {
 			type: String,
 			trim: true,
+		},
+		affiliateLinkCount: {
+			type: Number,
+			default: 0,
+		},
+		linkClickHistory: {
+			last: {
+				type: String,
+				enum: ["USER", "OUR", null],
+			},
+			secondLast: {
+				type: String,
+				enum: ["USER", "OUR", null],
+			},
+			thirdLast: {
+				type: String,
+				enum: ["USER", "OUR", null],
+			},
 		},
 		deliveryPrice: {
 			type: Number,
@@ -73,7 +92,7 @@ const dealSchema = new Schema(
 		},
 		expiryDate: {
 			type: Date,
-			default: new Date("2050-01-01"),
+			// default: new Date("2050-01-01"),
 			trim: true,
 		},
 		upVotes: {
@@ -104,14 +123,20 @@ const dealSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			ref: "User",
 		},
-		comments: {
-			type: Schema.Types.ObjectId,
-			ref: "Comment",
-		},
-		categories: [
+		comments: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: "Category",
+				ref: "Comment",
+			},
+		],
+		category: {
+			type: Schema.Types.ObjectId,
+			ref: "Category",
+		},
+		tags: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Tag",
 			},
 		],
 	},

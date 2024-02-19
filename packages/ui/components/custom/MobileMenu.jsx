@@ -23,10 +23,10 @@ import { keywords } from "../../constants/keywords";
 
 const MobileMenu = ({ lang }) => {
 	return (
-		<>
+		<div className="lg:hidden">
 			<Sheet>
-				<SheetTrigger asChild>
-					<Button variant="outline">
+				<SheetTrigger className="flex items-center" asChild>
+					<Button variant="ghost" size="xs" className="p-1">
 						<AlignJustify />
 					</Button>
 				</SheetTrigger>
@@ -47,7 +47,7 @@ const MobileMenu = ({ lang }) => {
 					</SheetFooter>
 				</SheetContent>
 			</Sheet>
-		</>
+		</div>
 	);
 };
 

@@ -7,9 +7,15 @@ import MobileBottomNavWrapper from "@repo/ui/components/wrapper/MobileBottomNavW
 const page = () => {
 	return (
 		<>
-			<NavbarWrapper lang={process.env.LANGUAGE} />
-			<HomePage lang={process.env.LANGUAGE} />
-			<MobileBottomNavWrapper lang={process.env.LANGUAGE} />
+			<NavbarWrapper
+				lang={process.env.LANGUAGE}
+				server={process.env.BACKEND_URL}
+			/>
+			<HomePage lang={process.env.LANGUAGE} server={process.env.BACKEND_URL} />
+			<MobileBottomNavWrapper
+				lang={process.env.LANGUAGE}
+				server={process.env.BACKEND_URL}
+			/>
 		</>
 	);
 };

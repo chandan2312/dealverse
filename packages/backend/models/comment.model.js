@@ -13,7 +13,14 @@ const commentSchema = new Schema(
 		downVotes: {
 			type: Number,
 		},
-		replies: {
+		replies: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Comment",
+			},
+		],
+
+		parent: {
 			type: Schema.Types.ObjectId,
 			ref: "Comment",
 		},

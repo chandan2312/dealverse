@@ -19,9 +19,8 @@ const storeSchema = new Schema(
 		description: {
 			type: String,
 			trim: true,
-			required: true,
 		},
-		storeLogo: {
+		logo: {
 			type: String,
 			trim: true,
 		},
@@ -31,29 +30,24 @@ const storeSchema = new Schema(
 			default: "Low",
 			trim: true,
 		},
+		link: {
+			type: String,
+			trim: true,
+		},
+		linkCount: {
+			type: Number,
+			default: 0,
+			trim: true,
+		},
 		affiliateLink: {
 			type: String,
 			trim: true,
 		},
-		website: {
-			type: String,
+		affiliateLinkCount: {
+			type: Number,
+			default: 0,
 			trim: true,
 		},
-		social: [
-			{
-				name: {
-					type: String,
-					enum: ["facebook", "twitter", "instagram", "youtube", "linkedin"],
-					trim: true,
-					required: true,
-				},
-				link: {
-					type: String,
-					trim: true,
-					required: true,
-				},
-			},
-		],
 
 		//count fields
 
@@ -67,7 +61,6 @@ const storeSchema = new Schema(
 			default: 0,
 			trim: true,
 		},
-
 		postCount: {
 			type: Number,
 			default: 0,
@@ -86,12 +79,10 @@ const storeSchema = new Schema(
 
 		// Relational Fields
 
-		categories: [
-			{
-				type: Schema.Types.ObjectId,
-				ref: "Category",
-			},
-		],
+		category: {
+			type: Schema.Types.ObjectId,
+			ref: "Category",
+		},
 
 		user: {
 			type: Schema.Types.ObjectId,

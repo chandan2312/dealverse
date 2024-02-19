@@ -15,11 +15,11 @@ import LoginForm from "./LoginForm";
 
 import { keywords } from "../../constants/keywords";
 
-export function LoginDialog({ lang, title, buttonText }) {
+export function LoginDialog({ lang, server, title, buttonText }) {
 	return (
 		<Dialog>
-			<DialogTrigger asChild>
-				<Button variant="outline" size="sm">
+			<DialogTrigger className="px-1 " asChild>
+				<Button className="flex items-center px-1" variant="ghost" size="xs">
 					{buttonText}
 				</Button>
 			</DialogTrigger>
@@ -28,7 +28,7 @@ export function LoginDialog({ lang, title, buttonText }) {
 					<DialogTitle>{title}</DialogTitle>
 				</DialogHeader>
 				{/* other component */}
-				<LoginForm />
+				<LoginForm lang={lang} server={server} />
 				{/* <DialogFooter>
 					<Button type="submit">Save changes</Button>
 				</DialogFooter> */}

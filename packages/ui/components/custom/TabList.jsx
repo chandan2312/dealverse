@@ -22,7 +22,7 @@ const TabList = ({ lang, tabList }) => {
 				defaultValue="account"
 				className="w-full max-md:hidden mx-auto px-auto max-md:overflow-x-scroll"
 			>
-				<TabsList>
+				<TabsList className="">
 					{tabList.map((tab) => (
 						<>
 							<TabsTrigger key={tab.value} value={tab.value}>

@@ -5,22 +5,18 @@ import { Button } from "../../components/ui/button";
 import { LogOut } from "lucide-react";
 import { keywords } from "../../constants/keywords";
 import axios from "axios";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/navigation";
+import logout from "../../logic/logout";
 
 const LogoutButton = ({ lang, server }) => {
 	const handleLogout = async () => {
-		axios.defaults.withCredentials = true;
-		const res = await axios.post(`${server}/api/v1/user/logout`);
-		const response = await res.data;
-		console.log(response);
-		if (response.statusCode === 200) {
-			window.location.href = `/login`;
-		}
+		await logout(server);
 	};
+
 	return (
 		<Button onClick={handleLogout} variant="outline" size="icon">
 			<LogOut />
-			<span className="sr-only">Toggle theme</span>
+			<span className="sr-only">Logout</span>
 		</Button>
 	);
 };

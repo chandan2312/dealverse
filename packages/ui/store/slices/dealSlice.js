@@ -12,6 +12,8 @@ export const dealSlice = createSlice({
 				price: 100,
 			},
 		],
+		description: "",
+		isSaved: false,
 	},
 
 	reducers: {
@@ -30,9 +32,24 @@ export const dealSlice = createSlice({
 		getDeal: (state, action) => {
 			//
 		},
+
+		addDescription: (state, action) => {
+			state.description = action.payload;
+		},
+
+		setIsSaved: (state, action) => {
+			state.isSaved = action.payload;
+		},
 	},
 });
 
-export const { addDeal, removeDeal, updateDeal, getDeal } = dealSlice.actions;
+export const {
+	addDeal,
+	removeDeal,
+	updateDeal,
+	getDeal,
+	addDescription,
+	setIsSaved,
+} = dealSlice.actions;
 
 export default dealSlice.reducer;

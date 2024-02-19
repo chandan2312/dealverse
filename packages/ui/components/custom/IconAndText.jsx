@@ -7,6 +7,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "../ui/tooltip";
+import Link from "next/link";
 
 const IconAndText = ({
 	icon,
@@ -17,28 +18,34 @@ const IconAndText = ({
 	text,
 	isHover,
 	tooltip,
+	onClick,
 }) => {
 	if (tooltip) {
 		return (
-			<TooltipProvider>
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<Button
-							variant={variant}
-							size={size}
-							className={`flex gap-1 items-center justify-center ${className} ${
-								isHover ? "hover:bg-accent" : "hover:bg-transparent"
-							}`}
-						>
-							<span className="block">{icon && icon}</span>
-							<span className={`block ${textClassName}`}>{text ? text : ""}</span>
-						</Button>
-					</TooltipTrigger>
-					<TooltipContent>
-						<p>{tooltip}</p>
-					</TooltipContent>
-				</Tooltip>
-			</TooltipProvider>
+			<>
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger asChild>
+							<Button
+								// onClick={handleClick}
+								variant={variant}
+								size={size}
+								className={`flex gap-1 rounded-md items-center justify-center ${className} ${
+									isHover
+										? "hover:bg-accent2 hover:text-accent2-foreground"
+										: "hover:bg-transparent hover:text-primary-foreground"
+								}`}
+							>
+								<span className="block">{icon && icon}</span>
+								<span className={`block ${textClassName}`}>{text ? text : ""}</span>
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>{tooltip}</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			</>
 		);
 	}
 	return (
@@ -46,7 +53,9 @@ const IconAndText = ({
 			variant={variant}
 			size={size}
 			className={`flex gap-1 items-center justify-center ${className} ${
-				isHover ? "hover:bg-accent" : "hover:bg-transparent"
+				isHover
+					? "hover:bg-accent2 hover:text-accent2-foreground"
+					: "hover:bg-transparent hover:text-primary-foreground"
 			}`}
 		>
 			<span className="block">{icon && icon}</span>

@@ -4,10 +4,12 @@ import {
 	tokenChecker,
 	logoutUser,
 	registerUser,
+	authGoogle,
 	refreshAccessToken,
 	changeCurrentPassword,
 	getCurrentUser,
 	updateProfileDetails,
+	verifyOtp,
 
 	// updateUserAvatar,
 	// updateUserCoverImage,
@@ -23,7 +25,9 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router();
 router.route("/login").post(loginUser);
 router.route("/register").post(registerUser);
+router.route("/auth-google").post(authGoogle);
 router.route("/token-checker").post(tokenChecker);
+router.route("/verify-otp").post(verifyOtp);
 
 // //secured routes
 // router.route("/test").get(test);

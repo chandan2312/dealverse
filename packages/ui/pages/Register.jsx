@@ -7,7 +7,7 @@ import { buttonVariants } from "../components/ui/button";
 import { cn } from "../utils";
 import { keywords } from "../constants/keywords";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import axios from "axios";
 import tokenChecker from "../helpers/tokenChecker";
@@ -19,7 +19,7 @@ export const metadata = {
 
 export default function Register({ lang, server, domain }) {
 	const [loading, setLoading] = useState(true);
-	const router = useRouter();
+	// const router = useRouter();
 	useEffect(() => {
 		const checker = async () => {
 			const token = await tokenChecker(server);

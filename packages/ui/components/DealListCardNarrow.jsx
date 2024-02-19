@@ -21,6 +21,7 @@ import { Input } from "./ui/input";
 import { faker } from "@faker-js/faker";
 
 import { keywords } from "../constants/keywords";
+import StoreWrapper from "./wrapper/StoreWrapper";
 
 const DealListCardNarrow = ({
 	lang,
@@ -56,7 +57,9 @@ const DealListCardNarrow = ({
 				<div className="w-full relative">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-1">
-							<UpVoteButton upVote={10} iconSize={14} size="xs" />
+							<StoreWrapper>
+								<UpVoteButton upVote={10} iconSize={14} size="xs" />
+							</StoreWrapper>
 
 							<Separator orientation="vertical" />
 
@@ -156,14 +159,17 @@ const DealListCardNarrow = ({
 							""
 						)}
 
-						<Button className="bg-accent rounded-2xl px-1 py-[2px] text-sm" size="xs">
+						<Button
+							className="bg-accent text-accent-foreground rounded-2xl px-1 py-[2px] text-sm"
+							size="xs"
+						>
 							{props.type === "coupon" ? (
 								<TicketPercent size={16} />
 							) : (
 								<Tag size={16} />
 							)}
 
-							<span className="px-1 text-sm">
+							<span className="px-1 text-sm ">
 								{props.type === "coupon"
 									? keywords.grabCoupon[lang]
 									: keywords.getDeal[lang]}

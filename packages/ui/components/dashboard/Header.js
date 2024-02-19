@@ -7,28 +7,29 @@ import { UserNav } from "./UserNav";
 import Link from "next/link";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import tokenChecker from "../../helpers/tokenChecker";
 import LogoutButton from "./LogoutButton";
 
 export default function Header({ lang, server }) {
 	const [loading, setLoading] = useState(true);
-	const router = useRouter();
-	useEffect(() => {
-		const checker = async () => {
-			const token = await tokenChecker(server);
-			if (!token) {
-				router.push("/login");
-			}
-			setLoading(false);
-		};
+	// const router = useRouter();
+	// useEffect(() => {
+	// 	const checker = async () => {
+	// 		const token = await tokenChecker(server);
+	// 		if (!token) {
+	// 			// router.push("/login");
+	// 			window.location.href = "/login";
+	// 		}
+	// 		setLoading(false);
+	// 	};
 
-		checker();
-	}, []);
+	// 	checker();
+	// }, []);
 
 	if (loading) {
 		return (
-			<div className="fixed top-0 bottom-0 left-0 right-0 z-50">
+			<div className="fixed bg-background top-0 bottom-0 left-0 right-0 z-50">
 				<div className="flex items-center justify-center w-full h-full">
 					loading.....
 				</div>

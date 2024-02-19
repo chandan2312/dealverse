@@ -20,15 +20,13 @@ const config = {
 	reactStrictMode: true,
 
 	images: {
-		domains: ["localhost", "avatars.githubusercontent.com"],
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "**",
+			},
+		],
 	},
-
-	remotePatterns: [
-		{
-			protocol: "https",
-			hostname: "**",
-		},
-	],
 };
 
 module.exports = config;

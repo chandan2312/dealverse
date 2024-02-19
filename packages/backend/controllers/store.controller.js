@@ -4,43 +4,31 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Store } from "../models/store.model.js";
+import { Category } from "../models/category.model.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import { transliterate as tr, slugify } from "transliteration";
 
 //--------------------------- addStore ---------------------------//
-export const addStore = asyncHandler(async (req, res, next) => {
+export const addStore = asyncHandler(async (req, res) => {
 	const {
 		name,
-		slug,
 		description,
-		views = 0,
+		logo,
+		category,
+		link,
 		affiliateLink = "",
-		website = "",
-		social = [],
+		views = 0,
 
 		dealCount = 0,
 		couponCount = 0,
 		postCount = 0,
 		newsletterCount = 0,
-		categories = [],
 
-		user,
 		upvotes = 0,
-		createdAt = Date.now(),
-		updatedAt = Date.now(),
 	} = await req.body;
 
-	const requiredFields = ["name", "slug", "description"];
-
-	const countFields = [
-		"dealCount",
-		"couponCount",
-		"postCount",
-		"newsletterCount",
-	];
-
-	const emptyField = requiredFields.find(() => !field || field.trim() === "");
+	const countFields = [dealCount, couponCount, postCount, newsletterCount];
 
 	const countFieldsNotZero = countFields.find((field) => field !== 0);
 	//check user role
@@ -49,10 +37,6 @@ export const addStore = asyncHandler(async (req, res, next) => {
 			401,
 			`You are not allowed to change ${countFieldsNotZero} field`
 		);
-	}
-
-	if (emptyField) {
-		throw new ApiError(400, `${emptyField} is required`);
 	}
 
 	if (req.user.role !== "admin" && affiliateLink) {
@@ -64,33 +48,38 @@ export const addStore = asyncHandler(async (req, res, next) => {
 	});
 
 	if (storeByName) {
-		throw new ApiError(400, `Store name already exist`);
+		return res.status(200).json(new ApiResponse(500, "Store is already added"));
 	}
 
-	const image = req.files.storeLogo[0].path.replace("public", "");
+	const userId = req.user._id;
+	console.log(userId);
+	const slug = slugify(tr(name));
 
 	try {
 		const newStore = await Store.create({
 			name,
 			slug,
-			description,
-			storeLogo: image,
+			description: JSON.stringify(description),
+			logo,
+			link,
 			affiliateLink,
-			website,
-			social,
+			category: new mongoose.Types.ObjectId(category),
 			dealCount,
 			couponCount,
 			postCount,
 			newsletterCount,
-			categories,
-			user,
 			upvotes,
-			createdAt,
-			updatedAt,
+			user: userId,
 		});
+
+		return res
+			.status(200)
+			.json(new ApiResponse(200, "New Store added", newStore));
 	} catch (error) {
-		console.log(error.message);
-		return res.status(400).json(new ApiResponse(400, null, error.message));
+		console.log(error);
+		return res
+			.status(400)
+			.json(new ApiResponse(400, "Something went wrong", error.message));
 	}
 });
 
@@ -238,7 +227,7 @@ export const deleteStores = asyncHandler(async (req, res, next) => {
 		);
 	});
 
-	if (inValidStore) {
+	if (invalidStore) {
 		throw new ApiError(
 			401,
 			`You are not allowed to delete ${invalidStore.name} store`

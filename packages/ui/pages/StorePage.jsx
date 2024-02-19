@@ -59,8 +59,8 @@ const StorePage = ({ lang, server, slug }) => {
 				</CardContent>
 
 				<CardContent className="flex justify-between items-center">
-					<TabList lang={lang} tabList={storePageTabs} />
-					<Filters lang={lang} />
+					<TabList lang={lang} server={server} tabList={storePageTabs} />
+					<Filters lang={lang} server={server} />
 				</CardContent>
 
 				<CardContent>
@@ -70,27 +70,39 @@ const StorePage = ({ lang, server, slug }) => {
 						.map((_, i) => (
 							<DealListCard
 								lang={lang}
-								title="Apple iPhone 12 Pro Max"
-								description="Apple iPhone 12 Pro Max (128GB) - Pacific Blue"
-								storeName="Amazon"
-								storeLink="https://www.amazon.in/"
-								discountPrice={129900}
-								originalPrice={139900}
-								deliveryPrice={0}
-								type="deal"
-								category={dummyCategory}
-								currency={keywords.currency[lang]}
-								upVotes={105}
-								coverImage="https://images-na.ssl-images-amazon.com/images/I/71MHTD3uL4L._SL1500_.jpg"
-								createdAt="2021-09-18T12:00:00.000Z"
-								updatedAt="2021-09-20T12:00:00.000Z"
-								commentCount={10}
-								saveCount={20}
-								username="Siddharth"
-								userAvatar="https://avatars.githubusercontent.com/u/56189221?v=4"
-								userLink="https://google.com"
-								isUserVerified={true}
-								isExpired={false}
+								server={server}
+								className="w-full"
+								deal={{
+									_id: 1,
+									title: "Apple iPhone 12 Pro Max",
+									description: "Apple iPhone 12 Pro Max (128GB) - Pacific Blue",
+									storeName: "Amazon",
+									storeLink: "https://www.amazon.in/",
+									offer: "25% Off",
+									discountPrice: 129900,
+									originalPrice: 139900,
+									deliveryPrice: 8.99,
+									couponCode: "APPLE10",
+									type: "COUPON",
+									category: {
+										name: "Electronics",
+										slug: "electronics",
+										icon: <MonitorSmartphone />,
+									},
+									currency: "INR",
+									upVotes: 105,
+									coverImage:
+										"https://images-na.ssl-images-amazon.com/images/I/71MHTD3uL4L._SL1500_.jpg",
+									createdAt: "2021-09-18T12:00:00.000Z",
+									updatedAt: "2021-09-20T12:00:00.000Z",
+									commentCount: 10,
+									saveCount: 20,
+									username: "chandan704",
+									userAvatar: "https://avatars.githubusercontent.com/u/56189221?v=4",
+									userLink: "https://google.com",
+									isUserVerified: true,
+									isExpired: false,
+								}}
 							/>
 						))}
 
@@ -109,10 +121,10 @@ const StorePage = ({ lang, server, slug }) => {
 			</Card>
 
 			<aside className="col-span-12 md:col-span-5 lg:col-span-4">
-				<TopStoreWidget lang={lang} />
-				<RelatedDeals lang={lang} />
-				<TopCategoriesWidget lang={lang} />
-				<ShareToButton lang={lang} />
+				<TopStoreWidget lang={lang} server={server} />
+				<RelatedDeals lang={lang} server={server} />
+				<TopCategoriesWidget lang={lang} server={server} />
+				<ShareToButton lang={lang} server={server} />
 			</aside>
 		</div>
 	);

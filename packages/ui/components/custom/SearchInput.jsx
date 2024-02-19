@@ -43,7 +43,7 @@ const SearchInput = ({
 		<div className="p-1 mx-auto ">
 			<div className="mx-auto flex items-center justify-between relative">
 				<Input
-					className={`w-full flex-grow-0  ${className}`}
+					className={`w-full flex-grow-0 bg-slate-100/20 dark:bg-slate-900/20   ${className}`}
 					placeholder={placeholder}
 					value={value}
 					onChange={(e) => setInput(e.target.value)}

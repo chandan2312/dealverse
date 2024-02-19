@@ -19,7 +19,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "../../components/ui/tabs";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/navigation";
 
 export default function HomePage() {
 	// const [loading, setLoading] = useState(true);
