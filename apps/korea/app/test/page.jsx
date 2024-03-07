@@ -1,12 +1,12 @@
 "use client";
 
+import MultiStepFormWrapper from "@repo/ui/components/wrapper/MultiStepFormWrapper";
 import React from "react";
-import MobileMenu from "@repo/ui/components/custom/MobileMenu";
 
 const page = () => {
 	return (
 		<div>
-			<MobileMenu />
+			<MultiStepFormWrapper />
 		</div>
 	);
 };

@@ -3,9 +3,12 @@ import Register from "@repo/ui/pages/Register";
 
 const register = () => {
 	return (
-		<div className="max-w-md m-auto p-auto py-6">
-			<h1 className="text-2xl font-semibold py-2">Register</h1>
-			<Register lang={process.env.LANGUAGE} />
+		<div className=" m-auto p-auto fixed top-0 bottom-0 right-0 left-0 ">
+			<Register
+				domain={process.env.DOMAIN}
+				lang={process.env.LANGUAGE}
+				server={process.env.BACKEND_URL}
+			/>
 		</div>
 	);
 };

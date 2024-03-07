@@ -20,19 +20,13 @@ const config = {
 	reactStrictMode: true,
 
 	images: {
-		domains: [
-			"localhost",
-			"avatars.githubusercontent.com",
-			"cloudflare-ipfs.com",
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "**",
+			},
 		],
 	},
-
-	remotePatterns: [
-		{
-			protocol: "https",
-			hostname: "**",
-		},
-	],
 };
 
 module.exports = config;
