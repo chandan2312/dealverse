@@ -200,11 +200,11 @@ const DealInfoCard = async ({ lang, server, deal }) => {
 							lang={lang}
 							user={{
 								avatar: "https://i.pravatar.cc/300",
-								username: deal.user.username,
-								name: deal.user.fullName,
-								createdAt: dateConverter(deal.user.createdAt),
-								dealCount: deal.user.dealCount,
-								commentCount: deal.user.commentCount,
+								username: deal?.user?.username || "",
+								name: deal?.user?.fullName || "",
+								createdAt: dateConverter(deal?.user?.createdAt || Date.now()),
+								dealCount: deal?.user?.dealCount || 0,
+								commentCount: deal?.user?.commentCount || 0,
 							}}
 						/>
 					</Card>

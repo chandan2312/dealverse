@@ -174,13 +174,13 @@ const DealListCard = ({ lang, server, className, deal }) => {
 
 						<div className="flex items-center">
 							<Link
-								href={`/user/${deal.user.username}`}
+								href={`/user/${deal?.user?.username || ""}`}
 								className="flex gap-2 items-center text-xs"
 							>
 								<span>
 									<Image
-										src={deal.user?.avatar || faker.image.avatar()}
-										alt={deal.user.username}
+										src={deal?.user?.avatar || faker.image.avatar()}
+										alt={deal?.user?.username || "user"}
 										width={16}
 										height={16}
 										className=" rounded-sm"
