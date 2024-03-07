@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import { transliterate as tr, slugify } from "transliteration";
 import { Tag } from "../models/tag.model.js";
 import { Comment } from "../models/comment.model.js";
+import { Store } from "../models/store.model.js";
 
 //--------------------------- addDeal ---------------------------//
 
@@ -350,14 +351,15 @@ export const getDeal = asyncHandler(async (req, res, next) => {
 export const getDealList = asyncHandler(async (req, res, next) => {
 	const {
 		page = 1,
-		limit = 10,
+		perPage = 2,
 		sortBy = "createdAt",
 		sortOrder = "asc",
 		searchTerm = "",
 		fieldsToInclude = [],
 		hotTab = false,
-		filterTime = "week", // day, yesterday, week, month, year
 		views = 100,
+		tab = "hot",
+		time = "this-month",
 
 		//populate
 		populateUser = true,
@@ -381,108 +383,162 @@ export const getDealList = asyncHandler(async (req, res, next) => {
 	}
 
 	let hotTabQuery;
-	switch (filterTime) {
-		case "day":
-			hotTabQuery = {
-				$gte: new Date(new Date().setDate(new Date().getDate() - 1)),
-			};
-			break;
-		// ... other cases
-		default:
-			hotTabQuery = null;
+
+	try {
+		let query = Deal.find();
+
+		// ---------------- Populate --------------------
+
+		if (populateUser) {
+			query = query.populate("user");
+		}
+
+		if (populateStore) {
+			query = query.populate("store");
+		}
+
+		if (populateTags) {
+			query = query.populate("tags");
+		}
+
+		if (populateCategory) {
+			query = query.populate("category");
+		}
+
+		if (populateComments) {
+			query = query.populate("comments");
+		}
+
+		//------------------- curr Tab ------------------
+
+		if (tab === "hot") {
+			//deals descending order by views
+			query = query.sort({ views: -1 });
+		}
+		if (tab === "new") {
+			//deals descending order by createdAt
+			query = query.sort({ createdAt: -1 });
+		}
+
+		if (tab === "commented") {
+			//deals descending order by comments
+			query = query.sort({ comments: -1 });
+		}
+
+		if (tab === "voted") {
+			//highest to lowest
+			query = query.sort({ upVotes: -1 });
+		}
+
+		// ---------------- Time Sort --------------------
+
+		if (time === "today") {
+			query = query
+				.where("createdAt")
+				.gte(new Date(new Date().setDate(new Date().getDate() - 1)));
+		}
+
+		if (time === "this-week") {
+			query = query
+				.where("createdAt")
+				.gte(new Date(new Date().setDate(new Date().getDate() - 7)));
+		}
+
+		if (time === "this-month") {
+			query = query
+				.where("createdAt")
+				.gte(new Date(new Date().setDate(new Date().getDate() - 30)));
+		}
+
+		// ---------------- Filter --------------------
+
+		if (filterStores.length > 0) {
+			// store ids from store slug
+			const storeIdsRes = await Store.find({ slug: { $in: filterStores } }).select(
+				""
+			);
+
+			const storeIds = storeIdsRes.map((store) => store._id.toString());
+
+			console.log(storeIds);
+			query = query.where("store").in(storeIds);
+		}
+
+		if (filterCategories.length > 0) {
+			const categoryIds = await Category.find({
+				slug: { $in: filterCategories },
+			}).select("_id");
+			query = query.where("categories").in(categoryIds);
+		}
+
+		if (filterUser) {
+			const query = query.where("user", filterUser);
+		}
+
+		if (filterPriceRange.length > 0) {
+			query = query
+				.where("discountPrice")
+				.gte(filterPriceRange[0])
+				.lte(filterPriceRange[1] ? filterPriceRange[1] : 1000000);
+		}
+
+		if (filterHideExpired) {
+			query = query.where("expiryDate").gte(currentTime);
+		}
+
+		//total count of filtered deals
+
+		const totalDeals = await Deal.countDocuments(query);
+
+		//----------------- pagination --------------------
+
+		if (perPage) {
+			query = query.limit(perPage).skip(perPage * (page - 1));
+		}
+
+		//------------------- Time Filter ------------------
+
+		if (hotTab && searchTerm) {
+			query = query
+				.where("createdAt")
+				.gte(new Date(new Date().setDate(new Date().getDate() - 30)));
+		}
+
+		if (hotTab) {
+			query = query.where("views").gte(100);
+		}
+
+		if (searchTerm) {
+			query = query.or([
+				{ title: new RegExp(searchTerm, "i") },
+				{ description: new RegExp(searchTerm, "i") },
+			]);
+		}
+
+		if (hotTab) {
+			query = query.sort({ views: -1 });
+		}
+
+		if (filterPriceRange.length) {
+			query = query.sort({ discountPrice: sortOrder === "desc" ? -1 : 1 });
+		}
+
+		if (fieldsToInclude.length) {
+			let projection = {};
+			fieldsToInclude.forEach((field) => (projection[field] = 1));
+			query = query.select(projection);
+		}
+
+		const deals = await query.exec();
+
+		// console.log("deals from deal.controller");
+		// console.log(deals);
+
+		return res.status(200).json(new ApiResponse(200, "Deals are fetched", deals));
+	} catch (error) {
+		console.log(error.message);
+		return res.status(500).json(new ApiResponse(500, error.message, error));
 	}
-
-	let query = Deal.find();
-
-	// ---------------- Populate --------------------
-
-	if (populateUser) {
-		query = query.populate("user");
-	}
-
-	if (populateStore) {
-		query = query.populate("store");
-	}
-
-	if (populateTags) {
-		query = query.populate("tags");
-	}
-
-	if (populateCategory) {
-		query = query.populate("category");
-	}
-
-	if (populateComments) {
-		query = query.populate("comments");
-	}
-
-	// ---------------- Filter --------------------
-
-	if (filterStores.length > 0) {
-		query = query.where("store").in(filterStores);
-	}
-
-	if (filterCategories.length > 0) {
-		query = query.where("categories").in(filterCategories);
-	}
-
-	if (filterUser) {
-		query = query.where("user", user);
-	}
-
-	if (filterStore) {
-		query = query.where("store", store);
-	}
-
-	if (filterPriceRange.length > 0) {
-		query = query
-			.where("discountPrice")
-			.gte(filterPriceRange[0])
-			.lte(filterPriceRange[1] ? filterPriceRange[1] : 1000000);
-	}
-
-	if (filterHideExpired) {
-		query = query.where("expiryDate").gte(currentTime);
-	}
-
-	if (hotTab && !searchTerm) {
-		query = query.where("createdAt", hotTabQuery);
-	}
-
-	if (hotTab && searchTerm) {
-		query = query
-			.where("createdAt")
-			.gte(new Date(new Date().setDate(new Date().getDate() - 30)));
-	}
-
-	if (hotTab) {
-		query = query.where("views").gte(100);
-	}
-
-	if (searchTerm) {
-		query = query.or([
-			{ title: new RegExp(searchTerm, "i") },
-			{ description: new RegExp(searchTerm, "i") },
-		]);
-	}
-
-	if (hotTab) {
-		query = query.sort({ views: -1 });
-	}
-
-	if (filterPriceRange.length) {
-		query = query.sort({ discountPrice: sortOrder === "desc" ? -1 : 1 });
-	}
-
-	if (fieldsToInclude.length) {
-		let projection = {};
-		fieldsToInclude.forEach((field) => (projection[field] = 1));
-		query = query.select(projection);
-	}
-
-	const deals = await query.exec();
-
-	return res.status(200).json(new ApiResponse(200, "Deals are fetched", deals));
 });
 
 export const getDealComments = asyncHandler(async (req, res, next) => {

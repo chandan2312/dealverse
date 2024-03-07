@@ -157,7 +157,7 @@ const userSchema = new Schema(
 				},
 				voteType: {
 					type: String,
-					enum: ["up", "down"],
+					enum: ["up", "down", null],
 				},
 			},
 		],

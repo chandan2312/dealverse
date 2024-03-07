@@ -1,70 +1,39 @@
 "use client";
 
-import React from "react";
-
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-import { Separator } from "../ui/separator";
-
+import { useState } from "react";
 import { Button } from "../ui/button";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "../ui/tooltip";
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
-import { keywords } from "../../constants/keywords";
+export default function TabList({ lang, server, slug, list }) {
+	const searchParams = useSearchParams();
+	const tab = searchParams.get("tab");
 
-const TabList = ({ lang, tabList }) => {
 	return (
-		<div>
-			<Tabs
-				defaultValue="account"
-				className="w-full max-md:hidden mx-auto px-auto max-md:overflow-x-scroll"
-			>
-				<TabsList className="">
-					{tabList.map((tab) => (
-						<>
-							<TabsTrigger key={tab.value} value={tab.value}>
-								{tab.icon}
-								<span className="pl-1">{keywords[tab.value][lang]}</span>
-							</TabsTrigger>
-
-							<Separator orientation="vertical" />
-						</>
-					))}
-				</TabsList>
-			</Tabs>
-
-			{/* ------------------ Mobile Tab List ---------------- */}
-
-			<Tabs
-				defaultValue="account"
-				className="w-full md:hidden mx-auto px-auto max-md:overflow-x-hidden max-md:overflow-y-hidden py-1"
-			>
-				<TabsList className="py-1">
-					{tabList.map((tab) => (
-						<TabsTrigger
-							className="hover:bg-accent"
-							key={tab.value}
-							value={tab.value}
-						>
-							<TooltipProvider>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<Button className="hover:bg-transparent" size="sm" variant="ghost">
-											{tab.icon}
-										</Button>
-									</TooltipTrigger>
-									<TooltipContent>{keywords[tab.value][lang]}</TooltipContent>
-								</Tooltip>
-							</TooltipProvider>
-						</TabsTrigger>
-					))}
-				</TabsList>
-			</Tabs>
+		<div className="w-full bg-slate-900 text-slate-300 flex items-center justfy-between flex-nowrap gap-4 md:gap-6 lg:gap-8 px-3 py-2 lg:py-3  overflow-x-scroll lg:rounded-lg">
+			{list?.map((item, index) => (
+				<Link
+					href={item?.value == "" ? `${slug}/` : `${slug}/?tab=${item?.value}`}
+					className={`${
+						item?.value == tab && "font-semibold   border-b-2 border-accent"
+					} text-sm cursor-pointer px-2 line-clamp-1 flex-shrink-0`}
+					key={index + 1}
+				>
+					{item?.title}
+				</Link>
+			))}
 		</div>
 	);
-};
-
-export default TabList;
+}

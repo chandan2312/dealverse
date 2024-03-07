@@ -12,39 +12,72 @@ import {
 } from "../ui/pagination";
 import { keywords } from "../../constants/keywords";
 
-export default function PaginationCard({ lang }) {
+export default function PaginationCard({
+	lang,
+	server,
+	slug,
+	currTab,
+	currSort,
+	currPage,
+}) {
+	console.log("from pagination card");
+	console.log("currTab", currTab);
+	console.log("currSort", currSort);
+	const prefix = `${slug}/?${currTab && `tab=${currTab}`}${
+		currTab && currSort && "&"
+	}${currSort && `sort=${currSort}`}${
+		((currSort && currPage) || (currTab && currPage)) && "&"
+	}`;
+
+	//tab="hot"&sort="today"&page=1
 	return (
 		<Card className="p-4 border  rounded-2xl shadow-sm">
 			<Pagination>
 				<PaginationContent>
-					<PaginationItem>
-						<PaginationPrevious
-							className="text-lg"
-							text={keywords.previous[lang]}
-							href="#"
-						/>
-					</PaginationItem>
-					<PaginationItem>
-						<PaginationLink className="text-lg" href="#">
-							1
-						</PaginationLink>
-					</PaginationItem>
+					{currPage > 1 && (
+						<PaginationItem>
+							<PaginationPrevious
+								className="text-lg"
+								text={keywords.previous[lang]}
+								href={`${prefix}page=${currPage - 1}`}
+							/>
+						</PaginationItem>
+					)}
+					{currPage > 1 && (
+						<PaginationItem>
+							<PaginationLink
+								className="text-lg"
+								href={`${prefix}page=${currPage - 1}`}
+							>
+								{currPage - 1}
+							</PaginationLink>
+						</PaginationItem>
+					)}
 					<PaginationItem>
 						<PaginationLink className="text-lg" href="#" isActive>
-							2
+							{currPage}
 						</PaginationLink>
 					</PaginationItem>
 					<PaginationItem>
-						<PaginationLink className="text-lg" href="#">
-							3
+						<PaginationLink
+							className="text-lg"
+							href={`${prefix}page=${currPage + 1}`}
+						>
+							{currPage + 1}
 						</PaginationLink>
 					</PaginationItem>
 					<PaginationItem>
 						<PaginationEllipsis />
 					</PaginationItem>
-					<PaginationItem>
-						<PaginationNext className="text-lg" text={keywords.next[lang]} href="#" />
-					</PaginationItem>
+					{currPage && (
+						<PaginationItem>
+							<PaginationNext
+								className="text-lg"
+								text={keywords.next[lang]}
+								href={`${prefix}page=${currPage + 1}`}
+							/>
+						</PaginationItem>
+					)}
 				</PaginationContent>
 			</Pagination>
 		</Card>

@@ -47,7 +47,7 @@ const Navbar = ({ lang, server }) => {
 	return (
 		<>
 			{/* <GoogleOAuthProvider clientId="806351833243-4bisladoofjrmovfr1paa2c3htnm7sqt.apps.googleusercontent.com"> */}
-			<nav className="bg-accent mb-3 lg:rounded-b-lg  md:py-2  px-2 md:px-4 lg:px-6  w-full ">
+			<nav className="bg-slate-900 text-slate-100 lg:mb-3 lg:rounded-b-lg  md:py-2  px-2 md:px-4 lg:px-6  w-full ">
 				{!currentMobileSearchState ? (
 					<>
 						<div className=" w-full max-md:py-2 flex items-center justify-between max-md:gap-2 gap-4">

@@ -16,9 +16,7 @@ export default function Filters() {
 			</PopoverTrigger>
 			<PopoverContent className="w-120">
 				<div className="grid gap-4">
-					<div className="space-y-2">
-						<h4 className="font-medium leading-none">Dimensions</h4>
-					</div>
+					<div className="space-y-2"></div>
 					<div className="grid gap-2"></div>
 				</div>
 			</PopoverContent>

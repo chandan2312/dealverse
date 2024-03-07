@@ -41,6 +41,7 @@ const dealSchema = new Schema(
 			maxlength: 25,
 			trim: true,
 		},
+
 		views: {
 			type: Number,
 			default: 0,

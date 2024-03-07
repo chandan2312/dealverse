@@ -14,7 +14,7 @@ import Filters from "../components/custom/Filters";
 import PaginationCard from "../components/custom/PaginationCard";
 
 import { keywords } from "../constants/keywords";
-import { storePageTabs } from "../constants/constants";
+import { storepageTabs } from "../constants/constants";
 
 import {
 	Tag,
@@ -26,23 +26,58 @@ import {
 } from "lucide-react";
 import ShareToButton from "../components/custom/ShareToButton";
 import DiscussionListCard from "../components/DiscussionListCard";
+import Image from "next/image";
+import axios from "axios";
+import { useMemo } from "react";
+import SortBy from "../components/custom/SortBy";
 
-const StorePage = ({ lang, server, slug }) => {
-	const dummyCategory = {
-		name: "Electronics",
-		slug: "electronics",
-		icon: <MonitorSmartphone />,
-	};
+const StorePage = async ({ lang, server, props }) => {
+	const searchParams = props?.searchParams;
+	const currTab = searchParams?.tab || "hot";
+	const currSort = searchParams?.sort || "this-week";
+	const currPage = parseInt(searchParams?.page) || 1;
+
+	const [res, dealRes] = await Promise.all([
+		axios.post(`${server}/api/v1/store/get-store`, { slug: props.params.slug }),
+		axios.post(`${server}/api/v1/deal/get-deal-list`, {
+			tab: "hot",
+			time: currSort,
+			page: currPage,
+			perPage: 2,
+			filterStores: [props.params.slug],
+		}),
+	]);
+
+	const response = res.data;
+	const store = response.data;
+
+	const deals = dealRes.data.data;
+	console.log(deals);
+
+	const MemoizedSidebar = React.memo(() => {
+		return (
+			<aside className="col-span-12 md:col-span-5 lg:col-span-4">
+				<TopStoreWidget lang={lang} server={server} />
+				<RelatedDeals lang={lang} server={server} />
+				<TopCategoriesWidget lang={lang} server={server} />
+				<ShareToButton lang={lang} server={server} />
+			</aside>
+		);
+	}, []);
 
 	return (
 		<div className=" grid grid-cols-12">
 			<Card className="col-span-12 md:col-span-7 lg:col-span-8">
 				<CardContent className="flex items-center gap-5">
 					<div className="w-24 h-24 flex items-center justify-center">
-						<img
-							src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/1024px-Amazon_logo.svg.png"
-							alt="logo"
-							className="rounded-full w-24 h-24 p-1 object-contain shadow-md"
+						<Image
+							src={`${
+								store?.logo ? store.logo : `https://logo.clearbit.com/amazon.com`
+							}`} //placeholder
+							width={48}
+							height={48}
+							alt={`${store?.name} logo`}
+							className="rounded-full w-full p-1 object-contain shadow-md"
 						/>
 					</div>
 
@@ -50,82 +85,63 @@ const StorePage = ({ lang, server, slug }) => {
 						<div className="text-xs text-center mx-auto px-auto">
 							<div>
 								<Link href={"/"}>Home</Link> / <Link href={"/stores"}>Stores</Link> /{" "}
+								<Link href={`/store/${store.slug}`}>${store?.name}</Link>
 							</div>
-
-							<Link href={"/store/amazon"}>Amazon</Link>
 						</div>
-						<h1 className="text-2xl font-bold">Amazon</h1>
+						<h1 className="text-2xl font-bold">{store.name}</h1>
 					</div>
 				</CardContent>
 
-				<CardContent className="flex justify-between items-center">
-					<TabList lang={lang} server={server} tabList={storePageTabs} />
-					<Filters lang={lang} server={server} />
+				<CardContent className="w-full flex justify-between items-center">
+					<TabList
+						lang={lang}
+						server={server}
+						slug={props.params.slug || ""}
+						list={storepageTabs}
+					/>
 				</CardContent>
+				<div className="px-3 flex items-center justify-between">
+					{/* sort by */}
+
+					<SortBy
+						lang={lang}
+						server={server}
+						slug={props.params.slug || ""}
+						currTab={currTab ? currTab : ""}
+						currSort={currSort ? currSort : ""}
+						currPage={currPage ? currPage : 1}
+					/>
+
+					{/* filters */}
+
+					{/* <Filters lang={lang} server={server} /> */}
+				</div>
 
 				<CardContent>
 					{/* <PaginationCard /> */}
-					{Array(10)
-						.fill()
-						.map((_, i) => (
+					{deals.map((deal) => {
+						return (
 							<DealListCard
 								lang={lang}
 								server={server}
 								className="w-full"
-								deal={{
-									_id: 1,
-									title: "Apple iPhone 12 Pro Max",
-									description: "Apple iPhone 12 Pro Max (128GB) - Pacific Blue",
-									storeName: "Amazon",
-									storeLink: "https://www.amazon.in/",
-									offer: "25% Off",
-									discountPrice: 129900,
-									originalPrice: 139900,
-									deliveryPrice: 8.99,
-									couponCode: "APPLE10",
-									type: "COUPON",
-									category: {
-										name: "Electronics",
-										slug: "electronics",
-										icon: <MonitorSmartphone />,
-									},
-									currency: "INR",
-									upVotes: 105,
-									coverImage:
-										"https://images-na.ssl-images-amazon.com/images/I/71MHTD3uL4L._SL1500_.jpg",
-									createdAt: "2021-09-18T12:00:00.000Z",
-									updatedAt: "2021-09-20T12:00:00.000Z",
-									commentCount: 10,
-									saveCount: 20,
-									username: "chandan704",
-									userAvatar: "https://avatars.githubusercontent.com/u/56189221?v=4",
-									userLink: "https://google.com",
-									isUserVerified: true,
-									isExpired: false,
-								}}
+								deal={deal}
 							/>
-						))}
+						);
+					})}
 
-					{/* {Array(10)
-						.fill()
-						.map((_, i) => (
-							<DiscussionListCard lang={lang} />
-						))} */}
-					{/* {Array(10)
-						.fill()
-						.map((_, i) => (
-							<PostListCard lang={lang} />
-						))} */}
-					<PaginationCard />
+					<PaginationCard
+						lang={lang}
+						server={server}
+						slug={props.params.slug || ""}
+						currTab={currTab ? currTab : ""}
+						currSort={currSort ? currSort : ""}
+						currPage={currPage ? currPage : 1}
+					/>
 				</CardContent>
 			</Card>
 
-			<aside className="col-span-12 md:col-span-5 lg:col-span-4">
-				<TopStoreWidget lang={lang} server={server} />
-				<RelatedDeals lang={lang} server={server} />
-				<TopCategoriesWidget lang={lang} server={server} />
-				<ShareToButton lang={lang} server={server} />
-			</aside>
+			<MemoizedSidebar />
 		</div>
 	);
 };

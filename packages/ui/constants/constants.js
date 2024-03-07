@@ -23,31 +23,6 @@ import {
 	Gift,
 } from "lucide-react";
 
-export const storePageTabs = [
-	{
-		icon: <Tag />,
-		value: "deals",
-	},
-
-	{
-		icon: <TicketPercent />,
-		value: "coupons",
-	},
-
-	{
-		icon: <MessageSquareMore />,
-		value: "discussions",
-	},
-	{
-		icon: <NotebookText />,
-		value: "posts",
-	},
-	{
-		icon: <Mail />,
-		value: "newsLetter",
-	},
-];
-
 export const publicProfilePageTabs = [
 	{
 		icon: <Tag />,
@@ -66,25 +41,6 @@ export const publicProfilePageTabs = [
 	{
 		icon: <NotebookText />,
 		value: "posts",
-	},
-];
-
-export const homePageTabs = [
-	{
-		icon: <Flame />,
-		value: "popular",
-	},
-	{
-		icon: <Newspaper />,
-		value: "latest",
-	},
-	{
-		icon: <Zap />,
-		value: "trending",
-	},
-	{
-		icon: <CircleUserRound />,
-		value: "forYou",
 	},
 ];
 
@@ -143,5 +99,43 @@ const languages = [
 	{
 		name: "German",
 		code: "de",
+	},
+];
+
+export const homepageTabs = [
+	{
+		title: "Hot",
+		value: "hot",
+	},
+	{
+		title: "New",
+		value: "new",
+	},
+	{
+		title: "Top Voted",
+		value: "voted",
+	},
+	{
+		title: "Most Commented",
+		value: "commented",
+	},
+];
+
+export const storepageTabs = [
+	{
+		title: "Hot",
+		value: "hot",
+	},
+	{
+		title: "New",
+		value: "new",
+	},
+	{
+		title: "Top Voted",
+		value: "voted",
+	},
+	{
+		title: "Most Commented",
+		value: "commented",
 	},
 ];

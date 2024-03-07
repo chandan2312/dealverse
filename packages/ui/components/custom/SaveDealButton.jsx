@@ -17,31 +17,39 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { setIsSaved } from "../../store/slices/dealSlice";
+import { set } from "date-fns";
 
-const SaveDealButton = ({ lang, server, data }) => {
+const SaveDealButton = ({ lang, server, data, deal, listView = false }) => {
 	const dispatch = useDispatch();
 	const user = useSelector((state) => state.user.user)?.payload;
 
 	const isSaved = useSelector((state) => state.deal.isSaved);
 
+	const [localSave, setLocalSave] = useState(false);
+
+	// useEffect(() => {
+	// 	setLocalSave(user ? user?.savedDeals.some((dl) => dl === deal?._id) : false);
+	// }, []);
+
 	useEffect(() => {
-		setIsSaved(
-			user ? user?.savedDeals.some((deal) => deal === data.dealId) : false
-		);
-	}, [data?.dealId, user?.savedDeals]);
+		setLocalSave(user ? user?.savedDeals.some((dl) => dl === deal?._id) : false);
+		dispatch(setIsSaved(localSave));
+	}, [deal, user?.savedDeals]);
 
 	const handleSave = async () => {
 		const res = await axios.post(`${server}/api/v1/action/save-deal`, {
-			dealId: data.dealId,
+			dealId: deal?._id,
 		});
 
 		const response = res.data;
 
 		if (response.statusCode === 200) {
 			if (response.data) {
-				dispatch(setIsSaved(true));
+				setLocalSave(true);
+				if (!listView) dispatch(setIsSaved(true));
 			} else {
-				dispatch(setIsSaved(false));
+				setLocalSave(false);
+				if (!listView) dispatch(setIsSaved(false));
 			}
 			toast(response.message);
 		}
@@ -66,10 +74,12 @@ const SaveDealButton = ({ lang, server, data }) => {
 					<TooltipTrigger asChild>
 						<Button
 							onClick={handleSave}
-							variant={isSaved ? "accent2" : "ghost"}
+							variant={localSave || isSaved ? "accent2" : "ghost"}
 							size={data?.size || "sm"}
-							className={`flex gap-1 rounded-md items-center justify-center cursor-pointer ${
-								isSaved
+							className={`${
+								deal?.className
+							} flex gap-1 rounded-full items-center justify-center cursor-pointer ${
+								localSave || isSaved
 									? "hover:bg-accent2 hover:text-accent2-foreground"
 									: "hover:bg-transparent hover:text-mutedText"
 							}  `}
@@ -78,7 +88,7 @@ const SaveDealButton = ({ lang, server, data }) => {
 								<Bookmark />{" "}
 								{data.saveText && (
 									<span className="pl-1">
-										{isSaved ? data.savedText : data.saveText}
+										{localSave || isSaved ? data.savedText : data.saveText}
 									</span>
 								)}
 							</span>

@@ -29,9 +29,41 @@ export const addView = asyncHandler(async (req, res, next) => {
 		.json(new ApiResponse(200, "View Added Successfully", addView));
 });
 
+//--------------------------------  get deal save & vote status ------------------------------
+
+export const getDealStatus = asyncHandler(async (req, res, next) => {
+	const { slug } = req.body;
+
+	//get views & upvotes
+
+	const result = {
+		voteStatus: null,
+		saveStatus: null,
+	};
+
+	const doc = await Deal.findOne({ slug: slug }).select("_id");
+
+	if (!doc)
+		return res.status(404).json(new ApiResponse(404, "Deal not found", null));
+
+	// get upvotes type
+
+	const upVotes = req.user.votedDeals.filter((vote) => vote.dealId === doc._id);
+
+	if (upVotes.length > 0) result.voteStatus = upVotes[0].voteType;
+
+	//is Saved
+
+	const isSaved = req.user.savedDeals.filter((deal) => deal === doc._id);
+
+	if (isSaved.length > 0) result.saveStatus = true;
+
+	return res.status(200).json(new ApiResponse(200, "Action Status", result));
+});
+
 //--------------------------------  ADD VOTE TO DEAL ------------------------------
 
-export const addVote = asyncHandler(async (req, res, next) => {
+export const addVote = asyncHandler(async (req, res) => {
 	const { dealId, voteType } = req.body;
 
 	if (!dealId || !voteType) {
@@ -86,52 +118,6 @@ export const addVote = asyncHandler(async (req, res, next) => {
 });
 
 //--------------------------------  GET CURRENT USERS VOTE STATUS ------------------------------
-
-export const getDealStatus = asyncHandler(async (req, res, next) => {
-	const { dealSlug } = req.body;
-
-	const status = {
-		voteType: null,
-		isSaved: null,
-	};
-
-	if (!dealSlug) {
-		return res.status(400).json(new ApiResponse(400, "Invalid Request", status));
-	}
-
-	if (!req?.user || !req?.user?._id) {
-		return res.status(200).json(new ApiResponse(401, "Not Logged in", status));
-	}
-
-	const deal = await Deal.findOne({ slug: dealSlug }).select("_id");
-
-	const userVotedDeal = await User.findOne(
-		{
-			_id: req.user._id,
-			"votedDeals.dealId": deal._id,
-		},
-		{ "votedDeals.$": 1 }
-	);
-
-	const userVotedType = userVotedDeal
-		? userVotedDeal.votedDeals[0].voteType
-		: null;
-
-	status.voteType = userVotedType;
-
-	// check current deal is saved in users savedDeals
-
-	const user = await User.findOne({
-		_id: req.user._id,
-		savedDeals: { $in: [deal._id] },
-	});
-
-	const isSaved = !!user;
-
-	status.isSaved = isSaved;
-
-	return res.status(200).json(new ApiResponse(200, "Vote Found", status));
-});
 
 // ---------------------- SAVE Deal ----------------------
 

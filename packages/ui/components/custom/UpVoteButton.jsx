@@ -12,8 +12,7 @@ import { useSelector } from "react-redux";
 const UpVoteButton = ({
 	lang,
 	server,
-	dealId,
-	docType,
+	deal,
 	upVotes = 0,
 	className,
 	size = "sm",
@@ -22,24 +21,26 @@ const UpVoteButton = ({
 }) => {
 	const user = useSelector((state) => state.user.user)?.payload;
 
+	const [voted, setVoted] = useState(
+		user
+			? user?.votedDeals?.filter((dl) => dl.dealId === deal?._id)[0]?.voteType
+			: null
+	);
+	const [voteCount, setVoteCount] = useState(deal?.upVotes || 0);
+
 	useEffect(() => {
 		setVoted(
 			user
-				? user?.votedDeals?.filter((deal) => deal.dealId === dealId)[0]?.voteType
+				? user?.votedDeals?.filter((dl) => dl.dealId === deal?._id)[0]?.voteType
 				: null
 		);
-	}, [dealId, user?.votedDeals]);
 
-	const [voted, setVoted] = useState(
-		user
-			? user?.votedDeals?.filter((deal) => deal.dealId === dealId)[0]?.voteType
-			: null
-	);
-	const [voteCount, setVoteCount] = useState(upVotes);
+		setVoteCount(deal?.upVotes || 0);
+	}, [deal, user?.votedDeals]);
 
 	const addVote = async (voteType) => {
 		const res = await axios.post(`${server}/api/v1/action/add-vote`, {
-			dealId,
+			dealId: deal?._id,
 			voteType: voteType,
 		});
 

@@ -16,19 +16,60 @@ import TopCategoriesWidget from "../components/TopCategoriesWidget";
 import { MonitorSmartphone } from "lucide-react";
 
 import { keywords } from "../constants/keywords";
-import { homePageTabs } from "../constants/constants";
+import { homepageTabs } from "../constants/constants";
 import TabList from "../components/custom/TabList";
 import Filters from "../components/custom/Filters";
 import axios from "axios";
+import InfiniteScroll from "../components/custom/InfiniteScroll";
+import SortBy from "../components/custom/SortBy";
+import PaginationCard from "../components/custom/PaginationCard";
 
-const HomePage = async ({ lang, server }) => {
+const HomePage = async ({ lang, server, props }) => {
+	const searchParams = props.searchParams;
+	const currTab = searchParams.tab;
+	const currSort = searchParams.sort;
+	const currPage = parseInt(searchParams.page);
+
 	const dummyCategory = {
 		name: "Electronics",
 		slug: "electronics",
 		icon: <MonitorSmartphone />,
 	};
 
-	const res = await axios.post(`${server}/api/v1/deal/get-deal-list`);
+	let res;
+	if (currTab === "hot" || currTab == undefined) {
+		res = await axios.post(`${server}/api/v1/deal/get-deal-list`, {
+			tab: "hot",
+			time: currSort,
+			page: currPage ? currPage : 1,
+			perPage: 2,
+		});
+	}
+	if (currTab === "new") {
+		res = await axios.post(`${server}/api/v1/deal/get-deal-list`, {
+			tab: "new",
+			time: currSort,
+			page: currPage ? currPage : 1,
+			perPage: 2,
+		});
+	}
+	if (currTab === "commented") {
+		res = await axios.post(`${server}/api/v1/deal/get-deal-list`, {
+			tab: "commented",
+			time: currSort,
+			page: currPage ? currPage : 1,
+			perPage: 2,
+		});
+	}
+
+	if (currTab === "voted") {
+		res = await axios.post(`${server}/api/v1/deal/get-deal-list`, {
+			tab: "voted",
+			time: currSort,
+			page: currPage ? currPage : 1,
+			perPage: 2,
+		});
+	}
 
 	const response = res.data;
 
@@ -47,14 +88,36 @@ const HomePage = async ({ lang, server }) => {
 
 			{/* -------------- Listing and Sidebars -------------- */}
 
-			<div className="grid grid-cols-12 gap-4 py-2">
+			<div className="grid grid-cols-12 gap-4 lg:py-2">
 				{/* Left */}
 
 				<div className="col-span-12 md:col-span-7 lg:col-span-8  w-full">
-					<Card className="w-full mx-auto px-auto px-4 py-2 flex items-center justify-between">
-						<TabList lang={lang} server={server} tabList={homePageTabs} />
-						<Filters lang={lang} server={server} />
-					</Card>
+					<TabList
+						lang={lang}
+						server={server}
+						slug=""
+						currTab={currTab ? currTab : ""}
+						currSort={currSort ? currSort : ""}
+						currPage={currPage ? currPage : 1}
+						list={homepageTabs}
+					/>
+
+					<div className="flex items-center justify-between">
+						{/* sort by */}
+
+						<SortBy
+							lang={lang}
+							server={server}
+							slug=""
+							currTab={currTab ? currTab : ""}
+							currSort={currSort ? currSort : ""}
+							currPage={currPage ? currPage : 1}
+						/>
+
+						{/* filters */}
+
+						{/* <Filters lang={lang} server={server} /> */}
+					</div>
 
 					{list.map((deal) => {
 						return (
@@ -66,6 +129,15 @@ const HomePage = async ({ lang, server }) => {
 							/>
 						);
 					})}
+
+					<PaginationCard
+						lang={lang}
+						server={server}
+						slug=""
+						currTab={currTab ? currTab : ""}
+						currSort={currSort ? currSort : ""}
+						currPage={currPage ? currPage : 1}
+					/>
 				</div>
 				{/* Right sidebar*/}
 				<Card className="col-span-12 md:col-span-5 lg:col-span-4">

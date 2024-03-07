@@ -20,6 +20,7 @@ import CommentSectionWrapper from "../components/wrapper/CommentSectionWrapper";
 import { slugify } from "transliteration";
 import StoreWrapper from "../components/wrapper/StoreWrapper";
 import SaveDealButton from "../components/custom/SaveDealButton";
+import { memo } from "react";
 
 const SingleDeal = async ({ lang, server, slug }) => {
 	const [res, view] = await Promise.all([
@@ -32,12 +33,20 @@ const SingleDeal = async ({ lang, server, slug }) => {
 	if (response.statusCode !== 200) {
 		redirect("/404");
 	}
-
 	const deal = response.data;
+
+	const MemoizedComp = memo(({ lang, server }) => (
+		<Card className="col-span-12 p-2 lg:col-span-4">
+			<RelatedDeals lang={lang} server={server} />
+			<TopStoreWidget lang={lang} server={server} />
+			<TopCategoriesWidget lang={lang} server={server} />
+			<ShareToButton lang={lang} server={server} />
+		</Card>
+	));
 
 	return (
 		<>
-			<Card className="text-mutedText bg-transparent grid grid-cols-12 gap-5 mt-4 shadow-none">
+			<Card className="w-full text-mutedText bg-transparent grid grid-cols-12 gap-5 mt-4 shadow-none">
 				{/* ------------ Left Side -------------- */}
 				<Card className="col-span-12 lg:col-span-8 p-2 lg:p-4 shadow-none">
 					<DealInfoCard lang={lang} server={server} deal={deal} />
@@ -64,12 +73,12 @@ const SingleDeal = async ({ lang, server, slug }) => {
 								lang={lang}
 								server={server}
 								data={{
-									dealId: deal._id,
 									variant: "ghost",
 									size: "sm",
 									saveText: keywords.saveLater[lang],
 									savedText: keywords.saved[lang],
 								}}
+								deal={deal}
 							/>
 						</StoreWrapper>
 					</Card>
@@ -89,12 +98,7 @@ const SingleDeal = async ({ lang, server, slug }) => {
 				</Card>
 				{/* ------------ Right Side -------------- */}
 
-				<Card className="col-span-12 p-2 lg:col-span-4">
-					<RelatedDeals lang={lang} />
-					<TopStoreWidget lang={lang} />
-					<TopCategoriesWidget lang={lang} />
-					<ShareToButton lang={lang} />
-				</Card>
+				<MemoizedComp lang={lang} server={server} />
 			</Card>
 		</>
 	);

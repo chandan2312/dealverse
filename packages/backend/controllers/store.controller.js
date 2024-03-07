@@ -249,54 +249,26 @@ export const deleteStores = asyncHandler(async (req, res, next) => {
 
 //--------------------------- getStore ---------------------------//
 export const getStore = asyncHandler(async (req, res, next) => {
-	const { slug, id } = await req.query;
+	const { slug } = await req.body;
+
+	console.log("slug from store	controller", slug);
 
 	try {
-		const store = await Store.aggregate(
-			[
-				{
-					$match: {
-						...(slug && { slug }),
-						...(id && { _id: mongoose.Types.ObjectId(id) }),
-					},
-				},
-				{
-					$lookup: {
-						from: "categories",
-						localField: "categories",
-						foreignField: "_id",
-						as: "categories",
-					},
-				},
-				{
-					$lookup: {
-						from: "user",
-						localField: "user",
-						foreignField: "_id",
-						pipeline: [
-							{
-								$project: {
-									password: 0,
-									refreshToken: 0,
-									ip4Address: 0,
-									ip6Address: 0,
-								},
-							},
-						],
-						as: "user",
-					},
-				},
-			].filter(Boolean)
-		);
+		const store = await Store.findOne({
+			slug: slug,
+		})
+			.populate("category")
+			.populate("user");
 
 		if (!store) {
-			throw new ApiError(400, "Store not found");
+			return res.status(400).json(new ApiResponse(400, "store not found", null));
 		}
-
-		return res.status(200).json(new ApiResponse(200, store, "Store is Fetched"));
+		return res.status(200).json(new ApiResponse(200, "Store is Fetched", store));
 	} catch (error) {
 		console.log(error.message);
-		return res.status(400).json(new ApiResponse(400, null, error.message));
+		return res
+			.status(400)
+			.json(new ApiResponse(400, "Erro finding the store", error.message));
 	}
 });
 

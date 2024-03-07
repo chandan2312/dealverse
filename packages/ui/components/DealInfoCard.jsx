@@ -44,13 +44,7 @@ const DealInfoCard = async ({ lang, server, deal }) => {
 					<div>
 						<Card className="flex items-center justify-between shadow-none">
 							<StoreWrapper>
-								<UpVoteButton
-									lang={lang}
-									server={server}
-									dealId={deal._id}
-									docType="deal"
-									upVotes={deal.upVotes}
-								/>
+								<UpVoteButton lang={lang} server={server} deal={deal} />
 							</StoreWrapper>
 
 							<div className="flex items-center justify-center gap-1">
@@ -75,10 +69,10 @@ const DealInfoCard = async ({ lang, server, deal }) => {
 										lang={lang}
 										server={server}
 										data={{
-											dealId: deal._id,
 											variant: "ghost",
 											size: "sm",
 										}}
+										deal={deal}
 									/>
 								</StoreWrapper>
 							</div>
@@ -95,9 +89,7 @@ const DealInfoCard = async ({ lang, server, deal }) => {
 										<CalendarX2 />
 									</span>
 									<span>{keywords.expiresOn[lang]}:</span>
-									<span className="font-bold text-red-400">
-										{deal?.expiryDate?.toLocaleDateString()}
-									</span>
+									<span className="font-bold text-red-400">{deal?.expiryDate}</span>
 								</div>
 							)}
 						</Card>
@@ -144,15 +136,15 @@ const DealInfoCard = async ({ lang, server, deal }) => {
 							<Separator orientation="vertical" />
 
 							<AvatarAndText
-								link={deal.store.logo}
+								link={deal?.store?.logo}
 								width={4}
 								height={4}
 								alt={keywords.avatar[lang]}
 								className=""
 								imgClassName="w-5 h-5 rounded-full shadow-md"
-								text={deal.store.name && deal.store.name}
+								text={deal?.store?.name && deal.store.name}
 								textClassName="text-sm"
-								textLink={deal.store.slug && `/store/${deal.store.slug}`}
+								textLink={deal?.store?.slug && `/store/${deal.store.slug}`}
 							/>
 						</Card>
 

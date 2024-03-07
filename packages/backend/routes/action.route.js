@@ -14,7 +14,7 @@ const router = Router();
 router.route("/add-view").post(addView);
 router.route("/add-vote").post(verifyJWT, addVote);
 router.route("/save-deal").post(verifyJWT, saveDeal);
-router.route("/get-deal-status").post(verifyJWT, getDealStatus);
+router.route("/deal-status").post(verifyJWT, getDealStatus);
 router.route("/deal-link").post(dealLink);
 
 export default router;
