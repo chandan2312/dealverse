@@ -4,6 +4,8 @@
 
 ### NextJS
 
+### Redux
+
 ### Tailwind
 
 ### NodeJS
