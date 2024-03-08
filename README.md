@@ -1,3 +1,19 @@
+## TECH STACK
+
+### TurboRepo
+
+### NextJS
+
+### Tailwind
+
+### NodeJS
+
+### ExpressJS
+
+### MongoDB
+
+### Mongoose
+
 ## This website is built with turborepo, so we can use same ui and backend for different websites.
 
 ## Here i keep the ui and backend exact same for different website and database is different of every website
