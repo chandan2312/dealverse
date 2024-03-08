@@ -4,7 +4,7 @@
 
 ### NextJS
 
-### Redux
+### Redux Toolkit
 
 ### Tailwind
 
